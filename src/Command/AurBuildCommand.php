@@ -16,22 +16,21 @@ class AurBuildCommand extends Command
 {
     protected static $defaultName = 'aur:build';
 
-	private AurService $aurService;
-	private ArchiveService $archiveService;
+    private AurService $aurService;
+    private ArchiveService $archiveService;
 
-	public function __construct(AurService $aurService, ArchiveService $archiveService)
+    public function __construct(AurService $aurService, ArchiveService $archiveService)
     {
-	    parent::__construct(self::$defaultName);
-	    $this->aurService = $aurService;
-	    $this->archiveService = $archiveService;
+        parent::__construct(self::$defaultName);
+        $this->aurService = $aurService;
+        $this->archiveService = $archiveService;
     }
 
-	protected function configure(): void
+    protected function configure(): void
     {
         $this
             ->setDescription('Build an ArchLinux package based on an AUR package name')
-            ->addArgument('package', InputArgument::REQUIRED, 'AUR Package name')
-        ;
+            ->addArgument('package', InputArgument::REQUIRED, 'AUR Package name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -40,25 +39,24 @@ class AurBuildCommand extends Command
 
         $packageName = $input->getArgument('package');
         if (!is_string($packageName)) {
-        	$io->error('Invalid package name');
+            $io->error('Invalid package name');
 
-        	return 1;
+            return 1;
         }
 
-	    $io->writeln(sprintf('Searching for package %s', $packageName));
-	    try {
-		    $package = $this->aurService->getPackageInformation($packageName);
-	    } catch (PackageNotFoundException $e) {
-		    $io->error($e->getMessage());
+        $io->writeln(sprintf('Searching for package %s', $packageName));
+        try {
+            $package = $this->aurService->getPackageInformation($packageName);
+        } catch (PackageNotFoundException $e) {
+            $io->error($e->getMessage());
 
-		    return 1; // Failure
-	    }
+            return 1; // Failure
+        }
 
-	    $io->writeln(sprintf('Package %s was found in version %s', $package->getName(), $package->getVersion()));
+        $io->writeln(sprintf('Package %s was found in version %s', $package->getName(), $package->getVersion()));
 
-
-	    $io->writeln('Downloading build information');
-	    $archivePath = $this->archiveService->prepareBuildFiles($package->getUrl(), $package->getName());
+        $io->writeln('Downloading build information');
+        $archivePath = $this->archiveService->prepareBuildFiles($package->getUrl(), $package->getName());
 
         return 0;
     }
