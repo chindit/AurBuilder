@@ -22,7 +22,7 @@ jobs:
 
     # Configuration to be decided
     - name: PHP Code Style Fixer (php-cs-fixer)
-      uses: chindit/actions-php-cs-fixer@1.0.3
+      uses: chindit/actions-php-cs-fixer@1.0.4
 
     - name: OSKAR-phpstan
       uses: OskarStark/phpstan-ga@0.12.17
