@@ -24,8 +24,8 @@ jobs:
     #- name: PHP Code Style Fixer (php-cs-fixer)
     #  uses: StephaneBour/actions-php-cs-fixer@1.0.2
 
-    - name: roave-bc-check-phpstan
-      uses: Nyholm/roave-bc-check-docker@0.1.0
+    - name: OSKAR-phpstan
+      uses: OskarStark/phpstan-ga@0.12.17
 
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
