@@ -20,8 +20,9 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: PHP Code Style Fixer (php-cs-fixer)
-      uses: StephaneBour/actions-php-cs-fixer@1.0.2
+    # Configuration to be decided
+    #- name: PHP Code Style Fixer (php-cs-fixer)
+    #  uses: StephaneBour/actions-php-cs-fixer@1.0.2
 
     - name: roave-bc-check-phpstan
       uses: Nyholm/roave-bc-check-docker@0.1.0
