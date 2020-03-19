@@ -1,4 +1,6 @@
 {
+    "name": "chindit/aur-builder",
+    "description": "Some commands and a very small website to automate AUR builds to ArchLinux packages",
     "type": "project",
     "license": "proprietary",
     "require": {
