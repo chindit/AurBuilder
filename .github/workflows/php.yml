@@ -21,8 +21,8 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     # Configuration to be decided
-    #- name: PHP Code Style Fixer (php-cs-fixer)
-    #  uses: StephaneBour/actions-php-cs-fixer@1.0.2
+    - name: PHP Code Style Fixer (php-cs-fixer)
+      uses: StephaneBour/actions-php-cs-fixer@1.0.2
 
     - name: OSKAR-phpstan
       uses: OskarStark/phpstan-ga@0.12.17
