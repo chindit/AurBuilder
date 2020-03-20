@@ -7,7 +7,7 @@ use App\Exception\FileSystemException;
 use App\Exception\InvalidPackageException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ArchiveService
+final class ArchiveService
 {
     private const BASE_URL = 'https://aur.archlinux.org/';
     private HttpClientInterface $httpClient;
