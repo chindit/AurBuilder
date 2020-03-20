@@ -9,5 +9,4 @@
     <arg name="extensions" value="php"/>
 
     <rule ref="ruleset.xml"/>
-
 </ruleset>
