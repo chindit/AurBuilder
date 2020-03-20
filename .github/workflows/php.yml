@@ -21,10 +21,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: PHP Code Style (phpcs)
-      uses: chindit/actions-phpcs@debug/missing_directory
-      with:
-        # Folder to check code style
-        dir: src/
+      uses: chindit/actions-phpcs@master
 
     - name: OSKAR-phpstan
       uses: OskarStark/phpstan-ga@0.12.17
