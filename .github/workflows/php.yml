@@ -20,9 +20,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    # Configuration to be decided
-    - name: PHP Code Style Fixer (php-cs-fixer)
-      uses: chindit/actions-php-cs-fixer@master
+    - name: PHP Code Style (phpcs)
+      uses: chindit/actions-phpcs@master
 
     - name: OSKAR-phpstan
       uses: OskarStark/phpstan-ga@0.12.17
