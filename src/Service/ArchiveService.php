@@ -5,16 +5,19 @@ namespace App\Service;
 
 use App\Exception\FileSystemException;
 use App\Exception\InvalidPackageException;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ArchiveService
 {
     private const BASE_URL = 'https://aur.archlinux.org/';
     private HttpClientInterface $httpClient;
+    private Filesystem $filesystem;
 
     public function __construct(HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
+        $this->filesystem = new Filesystem();
     }
 
     public function prepareBuildFiles(string $url, string $name): string
@@ -26,6 +29,10 @@ final class ArchiveService
         }
 
         file_put_contents($fileName, $archiveRequest->getContent());
+
+        if ($this->filesystem->exists(sys_get_temp_dir() . '/' . $name)) {
+            $this->filesystem->remove(sys_get_temp_dir() . '/' . $name);
+        }
 
         $archive = new \PharData($fileName);
         $archive->extractTo(sys_get_temp_dir());
