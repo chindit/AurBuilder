@@ -24,7 +24,7 @@ jobs:
       uses: chindit/actions-phpcs@debug/missing_directory
       with:
         # Folder to check code style
-        dir: .
+        dir: src/
 
     - name: OSKAR-phpstan
       uses: OskarStark/phpstan-ga@0.12.17
