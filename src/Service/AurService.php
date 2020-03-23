@@ -5,6 +5,8 @@ namespace App\Service;
 
 use App\Exception\PackageNotFoundException;
 use App\Model\PackageInformation;
+use Symfony\Component\HttpClient\Exception\TransportException;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class AurService
@@ -19,12 +21,19 @@ final class AurService
 
     public function getPackageInformation(string $packageName): PackageInformation
     {
-        $query = $this->httpClient->request('GET', self::BASE_URL . '&type=info&arg[]=' . $packageName);
+        try
+        {
+            $query = $this->httpClient->request('GET', self::BASE_URL . '&type=info&arg[]=' . $packageName);
 
-        $packageInformation = $query->toArray();
+            $packageInformation = $query->toArray();
+        } catch (HttpExceptionInterface | TransportException $exception) {
+            throw new PackageNotFoundException(
+                sprintf('Package %s haven\'t been found due to a network error.', $packageName)
+            );
+        }
 
-        if (!$packageInformation['results'] || empty($packageInformation['results'])) {
-            throw new PackageNotFoundException(sprintf('Package %s doesn\'t exist', $packageName));
+        if (!isset($packageInformation['results']) || empty($packageInformation['results'])) {
+            throw new PackageNotFoundException(sprintf('Package %s doesn\'t exist.', $packageName));
         }
 
         return new PackageInformation(
