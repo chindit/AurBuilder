@@ -59,7 +59,16 @@ class AurServiceTest extends TestCase
     public function testValidPackage()
     {
         $responses = [
-            new MockResponse('{"version":5,"type":"multiinfo","resultcount":1,"results":[{"ID":702647,"Name":"yay","PackageBaseID":115973,"PackageBase":"yay","Version":"9.4.6-2","Description":"Yet another yogurt. Pacman wrapper and AUR helper written in go.","URL":"https:\/\/github.com\/Jguer\/yay","NumVotes":1000,"Popularity":58.748318,"OutOfDate":null,"Maintainer":"jguer","FirstSubmitted":1475688004,"LastModified":1583019462,"URLPath":"\/cgit\/aur.git\/snapshot\/yay.tar.gz","Depends":["pacman>=5.2","sudo","git"],"MakeDepends":["go"],"License":["GPL"],"Keywords":["arm","AUR","go","helper","pacman","wrapper","x86"]}]}'),
+            new MockResponse(
+                '{"version":5,"type":"multiinfo","resultcount":1,
+            	"results":[{"ID":702647,"Name":"yay","PackageBaseID":115973,
+            	"PackageBase":"yay","Version":"9.4.6-2",
+            	"Description":"Yet another yogurt. Pacman wrapper and AUR helper written in go.",
+            	"URL":"https:\/\/github.com\/Jguer\/yay","NumVotes":1000,"Popularity":58.748318,
+            	"OutOfDate":null,"Maintainer":"jguer","FirstSubmitted":1475688004,"LastModified":1583019462,
+            	"URLPath":"\/cgit\/aur.git\/snapshot\/yay.tar.gz","Depends":["pacman>=5.2","sudo","git"],
+            	"MakeDepends":["go"],"License":["GPL"],"Keywords":["arm","AUR","go","helper","pacman","wrapper","x86"]}]}'
+            ),
         ];
 
         $httpEngine = new MockHttpClient($responses);
