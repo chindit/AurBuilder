@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: PHP Code Style (phpcs)
-        uses: chindit/actions-phpcs@master
+      - name: PHPStan
+        uses: chindit/actions-phpstan@master
         with:
           # Folder to check code style
           dir: src/
