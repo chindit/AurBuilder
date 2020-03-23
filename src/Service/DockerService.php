@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
-class DockerService
+final class DockerService
 {
 	public function createScriptFile(): bool
 	{
-
+		return true;
 	}
 }
