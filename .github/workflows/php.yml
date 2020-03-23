@@ -10,8 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      -   name: Validate composer.json and composer.lock
+          run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
       - name: PHPStan
         uses: chindit/actions-phpstan@master
         with:
-          # Folder to check code style
+          arguments: analyse src/ --level=7
+
+      - name: PHPCS
+        uses: chindit/actions-phpcs@master
+        with:
           dir: src/
+
+
