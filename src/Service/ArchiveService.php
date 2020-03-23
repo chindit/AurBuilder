@@ -14,31 +14,40 @@ final class ArchiveService
     private HttpClientInterface $httpClient;
     private Filesystem $filesystem;
 
-    public function __construct(HttpClientInterface $httpClient)
+    public function __construct(HttpClientInterface $httpClient, Filesystem $filesystem)
     {
         $this->httpClient = $httpClient;
-        $this->filesystem = new Filesystem();
+        $this->filesystem = $filesystem;
     }
 
     public function prepareBuildFiles(string $url, string $name): string
     {
-        $archiveRequest = $this->httpClient->request('GET', self::BASE_URL . $url);
         $fileName = tempnam(sys_get_temp_dir(), uniqid('', true));
         if ($fileName === false) {
             throw new FileSystemException('Unable to create temporary file');
         }
 
-        file_put_contents($fileName, $archiveRequest->getContent());
+        $archiveRequest = $this->httpClient->request('GET', self::BASE_URL . $url);
+        $result = file_put_contents($fileName, $archiveRequest->getContent());
+
+        if ($result === false || !$this->filesystem->exists($fileName)) {
+            throw new InvalidPackageException(sprintf('Unable to download and save package «%s»', $name));
+        }
 
         if ($this->filesystem->exists(sys_get_temp_dir() . '/' . $name)) {
             $this->filesystem->remove(sys_get_temp_dir() . '/' . $name);
         }
 
-        $archive = new \PharData($fileName);
-        $archive->extractTo(sys_get_temp_dir());
+        try
+        {
+            $archive = new \PharData($fileName);
+            $archive->extractTo(sys_get_temp_dir());
+        } catch (\UnexpectedValueException $exception) {
+            throw new InvalidPackageException(sprintf('Package «%s» is not a valid archive or is corrupted', $name));
+        }
 
         if (!file_exists(sys_get_temp_dir() . '/' . $name . '/PKGBUILD')) {
-            throw new InvalidPackageException(sprintf('Package %s is invalid.  No PKGBUILD found', $name));
+            throw new InvalidPackageException(sprintf('Package «%s» is invalid.  No PKGBUILD found', $name));
         }
 
         return sys_get_temp_dir() . '/' . $name;

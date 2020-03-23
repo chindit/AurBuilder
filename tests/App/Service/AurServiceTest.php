@@ -11,7 +11,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class AurServiceTest extends TestCase
 {
-    public function testEmptyResponse()
+    public function testCanHandleEmptyResponse()
     {
         $this->expectException(PackageNotFoundException::class);
         $this->expectExceptionMessage('Package chindit haven\'t been found due to a network error.');
@@ -26,7 +26,7 @@ class AurServiceTest extends TestCase
         $aurService->getPackageInformation('chindit');
     }
 
-    public function testNetworkError()
+    public function testCanHandleNetworkError()
     {
         $this->expectException(PackageNotFoundException::class);
         $this->expectExceptionMessage('Package chindit haven\'t been found due to a network error.');
@@ -41,7 +41,7 @@ class AurServiceTest extends TestCase
         $aurService->getPackageInformation('chindit');
     }
 
-    public function testPackageNotFound()
+    public function testCanHandlePackageNotFound()
     {
         $this->expectException(PackageNotFoundException::class);
         $this->expectExceptionMessage('Package chindit doesn\'t exist.');
@@ -56,7 +56,23 @@ class AurServiceTest extends TestCase
         $aurService->getPackageInformation('chindit');
     }
 
-    public function testValidPackage()
+    public function testCanHandleEmptyResultSet()
+    {
+        $this->expectException(PackageNotFoundException::class);
+        $this->expectExceptionMessage('Package chindit doesn\'t exist.');
+
+        $responses = [
+            new MockResponse('{"version":5,"type":"multiinfo","resultcount":1,
+            	"results":[]}'),
+        ];
+
+        $httpEngine = new MockHttpClient($responses);
+
+        $aurService = new AurService($httpEngine);
+        $aurService->getPackageInformation('chindit');
+    }
+
+    public function testReturnValidPackageResponse()
     {
         $responses = [
             new MockResponse(
