@@ -5,6 +5,7 @@ namespace App\Service;
 
 use App\Exception\FileSystemException;
 use App\Exception\InvalidPackageException;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -22,15 +23,24 @@ final class ArchiveService
 
     public function prepareBuildFiles(string $url, string $name): string
     {
-        $fileName = tempnam(sys_get_temp_dir(), uniqid('', true));
-        if ($fileName === false) {
-            throw new FileSystemException('Unable to create temporary file');
+        try
+        {
+            $fileName = $this->filesystem->tempnam(sys_get_temp_dir(), uniqid('', true));
+        } catch (IOException $exception) {
+            throw new FileSystemException(
+                sprintf('Unable to create temporary file.  Error returned is following: %s', $exception->getMessage())
+            );
         }
 
-        $archiveRequest = $this->httpClient->request('GET', self::BASE_URL . $url);
-        $result = file_put_contents($fileName, $archiveRequest->getContent());
+        try
+        {
+            $archiveRequest = $this->httpClient->request('GET', self::BASE_URL . $url);
+            $result = file_put_contents($fileName, $archiveRequest->getContent());
 
-        if ($result === false || !$this->filesystem->exists($fileName)) {
+            if ($result === false || !$this->filesystem->exists($fileName)) {
+                throw new \Exception();
+            }
+        } catch (\Exception $exception) {
             throw new InvalidPackageException(sprintf('Unable to download and save package «%s»', $name));
         }
 
