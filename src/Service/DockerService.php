@@ -67,7 +67,7 @@ final class DockerService
         try
         {
             $this->filesystem->copy($archivePath . '/PKGBUILD', $this->buildDirectory . '/PKGBUILD');
-            $this->filesystem->chmod($this->buildDirectory . '/PKGBUILD', '0744');
+            $this->filesystem->chmod($this->buildDirectory . '/PKGBUILD', 0744);
             $this->filesystem->copy($this->dockerCommands, $this->buildDirectory . '/build.sh');
         } catch (IOException $exception) {
             throw new FileSystemException('Unable to copy build files');
@@ -76,6 +76,13 @@ final class DockerService
 
     private function packageExists(): bool
     {
+        /**
+         * Scandir could return false and throw an E_WARNING.
+         * This CANNOT happen since directory is checked in
+         * prepareDirectories() method.  To avoid PHPStan
+         * warning, we force type variable
+         */
+        /** @var array<string> $files */
         $files = scandir($this->buildDirectory);
 
         return count(array_filter($files, fn(string $filename) => substr($filename, -7) === '.tar.xz')) > 0;
