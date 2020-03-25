@@ -46,7 +46,7 @@ class ArchiveServiceTest extends TestCase
 
         $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
 
-        $archiveService->prepareBuildFiles('/fake/url', 'chindit');
+        $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
 
     public function testCanHandleErrorOnTemporaryFile(): void
@@ -70,7 +70,7 @@ class ArchiveServiceTest extends TestCase
 
         $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
 
-        $archiveService->prepareBuildFiles('/fake/url', 'chindit');
+        $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
 
     public function testCanHandleInvalidArchive(): void
@@ -94,7 +94,7 @@ class ArchiveServiceTest extends TestCase
 
         $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
 
-        $archiveService->prepareBuildFiles('/fake/url', 'chindit');
+        $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
 
     public function testCanHandleValidArchiveWithInvalidContent(): void
@@ -116,7 +116,7 @@ class ArchiveServiceTest extends TestCase
 
         $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
 
-        $archiveService->prepareBuildFiles('/fake/url', 'chindit');
+        $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
 
     public function testCanHandleValidArchive(): void
@@ -135,7 +135,7 @@ class ArchiveServiceTest extends TestCase
 
         $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
 
-        $response = $archiveService->prepareBuildFiles('/fake/url', 'yay');
+        $response = $archiveService->getBuildInformation('/fake/url', 'yay');
 
         $this->assertTrue((new Filesystem())->exists($response));
         $this->assertTrue((new Filesystem())->exists($response . '/PKGBUILD'));
