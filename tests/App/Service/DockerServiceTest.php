@@ -97,7 +97,7 @@ class DockerServiceTest extends TestCase
         $fileSystem->copy(Argument::exact('/PKGBUILD'), Argument::exact('/tmp/PKGBUILD'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
-        $fileSystem->chmod(Argument::exact('/tmp/PKGBUILD'), Argument::exact('0744'))
+        $fileSystem->chmod(Argument::exact('/tmp/PKGBUILD'), Argument::exact(0744))
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('Unable to copy'));
 
@@ -117,7 +117,7 @@ class DockerServiceTest extends TestCase
         $fileSystem->copy(Argument::exact('/PKGBUILD'), Argument::exact('/tmp/PKGBUILD'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
-        $fileSystem->chmod(Argument::exact('/tmp/PKGBUILD'), Argument::exact('0744'))
+        $fileSystem->chmod(Argument::exact('/tmp/PKGBUILD'), Argument::exact(0744))
             ->shouldBeCalledOnce()
             ->willReturn(true);
         $fileSystem->copy(Argument::exact('Resources/dockerTest.sh'), Argument::exact('/tmp/build.sh'))
