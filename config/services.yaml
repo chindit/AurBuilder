@@ -14,7 +14,7 @@ services:
         bind:
             string $buildDirectory: '%env(string:BUILD_DIRECTORY)%'
             string $dockerCommandFile: '%env(string:DOCKER_COMMAND_FILE)%'
-            string $dockerCli: %dockercli%
+            string $dockerCli: '%dockercli%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
