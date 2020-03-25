@@ -42,7 +42,7 @@ final class DockerService
         $packageBuild->run(function($type, $buffer) use ($io) {
             $io->writeln($type . ':' . trim($buffer));
         });
-dump($packageBuild->getErrorOutput(), $packageBuild->getErrorOutput());
+        dump($packageBuild->getErrorOutput(), $packageBuild->getErrorOutput());
         return $packageBuild->isSuccessful() && $this->packageExists();
     }
 
