@@ -14,6 +14,9 @@ class DockerServiceTest extends TestCase
 {
     protected function setUp(): void
     {
+        $p = \Symfony\Component\Process\Process::fromShellCommandline('ls /usr/bin');
+        $p->run();
+        dump($p->getOutput());
         parent::setUp();
 
         mkdir('/tmp/t1build');
