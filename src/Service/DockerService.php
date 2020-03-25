@@ -4,27 +4,30 @@ namespace App\Service;
 
 use App\Exception\FileSystemException;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 final class DockerService
 {
     private string $buildDirectory;
-    private string $storageDirectory;
+    private string $dockerCommands;
     private Filesystem $filesystem;
 
-    public function __construct(string $buildDirectory, string $storageDirectory, Filesystem $filesystem)
+    public function __construct(
+        string $buildDirectory,
+        string $dockerCommands,
+        Filesystem $filesystem)
     {
         $this->buildDirectory = $buildDirectory;
-        $this->storageDirectory = $storageDirectory;
         $this->filesystem = $filesystem;
+        $this->dockerCommands = $dockerCommands;
     }
 
     public function prepareDocker(string $archivePath): void
     {
         $this->prepareDirectories();
         $this->copyFiles($archivePath);
-        $this->createScriptFile();
     }
 
     public function buildPackage(SymfonyStyle $io): bool
@@ -43,56 +46,38 @@ final class DockerService
         return $packageBuild->isSuccessful() && $this->packageExists();
     }
 
-    private function createScriptFile(): void
-    {
-        $dockerInstructions = [
-            '#!/usr/bin/bash',
-            'echo \'Refreshing package list\'',
-            'echo "Server = https://archlinux.mailtunnel.eu/$repo/os/$arch" >> /etc/pacman.d/mirrorlist',
-            'pacman -Sy',
-            'echo \'Installing build utils\'',
-            'pacman -S base-devel wget --noconfirm',
-            'echo \'Creating build directory and setting rights\'',
-            'useradd -d /home/packager -G root -m packager',
-            'echo "packager ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers',
-            'chown -R packager:users /home/packager',
-            'cd /home/packager/',
-            'echo \'Copying PKGBUILD\'',
-            'cp /tmp/package/PKGBUILD .',
-            'echo \'Starting build\'',
-            'sudo -u packager makepkg -s --noconfirm',
-            'echo \'Moving back package to exchange directory\'',
-            'mv *.tar.gz /tmp/package/'
-        ];
-
-        if (file_put_contents($this->buildDirectory . '/build.sh', implode("\n", $dockerInstructions)) === 0) {
-            throw new FileSystemException('Unable to write docker script');
-        }
-    }
-
     private function prepareDirectories(): void
     {
         if (!$this->filesystem->exists($this->buildDirectory)) {
-            if (!mkdir($this->buildDirectory, 0744) && !is_dir($this->buildDirectory)) {
+            try
+            {
+                $this->filesystem->mkdir($this->buildDirectory, 0744);
+            } catch (IOException $exception) {
                 throw new FileSystemException('Unable to create build directory');
             }
         }
 
-        if (!$this->filesystem->exists($this->storageDirectory) || !is_writable($this->storageDirectory)) {
-            throw new FileSystemException('Storage directory must exist and be writable');
+        if (!is_writable($this->buildDirectory)) {
+            throw new FileSystemException('Build directory must be writable');
         }
     }
 
     private function copyFiles(string $archivePath): void
     {
-        $this->filesystem->copy($archivePath . '/PKGBUILD', $this->buildDirectory . '/PKGBUILD');
-        $this->filesystem->chmod($this->buildDirectory . '/PKGBUILD', '0744');
+        try
+        {
+            $this->filesystem->copy($archivePath . '/PKGBUILD', $this->buildDirectory . '/PKGBUILD');
+            $this->filesystem->chmod($this->buildDirectory . '/PKGBUILD', '0744');
+            $this->filesystem->copy($this->dockerCommands, $this->buildDirectory . '/build.sh');
+        } catch (IOException $exception) {
+            throw new FileSystemException('Unable to copy build files');
+        }
     }
 
     private function packageExists(): bool
     {
         $files = scandir($this->buildDirectory);
 
-        return count(array_filter($files, fn(string $filename) => substr($filename, -7) === '.tar.gz')) > 0;
+        return count(array_filter($files, fn(string $filename) => substr($filename, -7) === '.tar.xz')) > 0;
     }
 }
