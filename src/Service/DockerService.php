@@ -42,10 +42,9 @@ final class DockerService
         $packageBuild->run(function($type, $buffer) use ($io) {
             $io->writeln($type . ':' . trim($buffer));
         });
-        dump(
-            Process::fromShellCommandline('ls /usr/bin | grep docker')->run()->getOutput(),
-            $packageBuild->getErrorOutput()
-        );
+        $p = Process::fromShellCommandline('ls /usr/bin | grep docker');
+        $p->run();
+        dump($p->getOutput(), $packageBuild->getErrorOutput());
         return $packageBuild->isSuccessful() && $this->packageExists();
     }
 
