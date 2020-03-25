@@ -14,9 +14,6 @@ class DockerServiceTest extends TestCase
 {
     protected function setUp(): void
     {
-        $p = \Symfony\Component\Process\Process::fromShellCommandline('ls /usr/bin');
-        $p->run();
-        dump($p->getOutput());
         parent::setUp();
 
         mkdir('/tmp/t1build');
@@ -37,7 +34,7 @@ class DockerServiceTest extends TestCase
         rmdir('/tmp/t1build');
     }
 
-    public function testCanHandleBuildDirectoryCreationFailure()
+    public function testCanHandleBuildDirectoryCreationFailure(): void
     {
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to create build directory');
@@ -50,11 +47,11 @@ class DockerServiceTest extends TestCase
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('TEST - Unable to create directory'));
 
-        $dockerService = new DockerService('/chindit', '', $fileSystem->reveal());
+        $dockerService = new DockerService('/chindit', '', '', $fileSystem->reveal());
         $dockerService->prepareDocker('');
     }
 
-    public function testEnsureBuildDirectoryIsWritable()
+    public function testEnsureBuildDirectoryIsWritable(): void
     {
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Build directory must be writable');
@@ -67,11 +64,11 @@ class DockerServiceTest extends TestCase
             ->shouldBeCalledOnce()
             ->willReturn(true);
 
-        $dockerService = new DockerService('/chindit', '', $fileSystem->reveal());
+        $dockerService = new DockerService('/chindit', '', '', $fileSystem->reveal());
         $dockerService->prepareDocker('');
     }
 
-    public function testCanHandleFailOnBuildFilesCopy()
+    public function testCanHandleFailOnBuildFilesCopy(): void
     {
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to copy build files');
@@ -84,11 +81,11 @@ class DockerServiceTest extends TestCase
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('Unable to copy'));
 
-        $dockerService = new DockerService('/tmp', '', $fileSystem->reveal());
+        $dockerService = new DockerService('/tmp', '', '', $fileSystem->reveal());
         $dockerService->prepareDocker('');
     }
 
-    public function testCanChangeChmodOnBuildFiles()
+    public function testCanChangeChmodOnBuildFiles(): void
     {
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to copy build files');
@@ -104,11 +101,11 @@ class DockerServiceTest extends TestCase
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('Unable to copy'));
 
-        $dockerService = new DockerService('/tmp', '', $fileSystem->reveal());
+        $dockerService = new DockerService('/tmp', '', '', $fileSystem->reveal());
         $dockerService->prepareDocker('');
     }
 
-    public function testCanHandleFailOnBuildScriptCopy()
+    public function testCanHandleFailOnBuildScriptCopy(): void
     {
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to copy build files');
@@ -127,22 +124,23 @@ class DockerServiceTest extends TestCase
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('Unable to copy'));
 
-        $dockerService = new DockerService('/tmp', 'Resources/dockerTest.sh', $fileSystem->reveal());
+        $dockerService = new DockerService('/tmp', 'Resources/dockerTest.sh', '', $fileSystem->reveal());
         $dockerService->prepareDocker('');
     }
 
-    public function testCanCopyRealFilesToRealDirectories()
+    public function testCanCopyRealFilesToRealDirectories(): void
     {
         $dockerService = new DockerService(
             '/tmp/t1build',
             __DIR__ . '/../../Resources/dockerTest.sh',
+            '',
             new Filesystem());
         $dockerService->prepareDocker('/tmp/t1build');
 
         $this->assertFileExists('/tmp/t1build/PKGBUILD');
     }
 
-    public function testBuildPackageRun()
+    public function testBuildPackage(): void
     {
         $io = $this->prophesize(SymfonyStyle::class);
         $io->writeln(Argument::exact('out:/'))
@@ -151,6 +149,7 @@ class DockerServiceTest extends TestCase
         $dockerService = new DockerService(
             '/tmp/t1build',
             __DIR__ . '/../../Resources/dockerTest.sh',
+            'cd / && pwd',
             new Filesystem());
         $dockerService->prepareDocker('/tmp/t1build');
 

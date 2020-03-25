@@ -11,17 +11,20 @@ use Symfony\Component\Process\Process;
 final class DockerService
 {
     private string $buildDirectory;
-    private string $dockerCommands;
+    private string $dockerCli;
+    private string $dockerCommand;
     private Filesystem $filesystem;
 
     public function __construct(
         string $buildDirectory,
-        string $dockerCommands,
+        string $dockerCommand,
+        string $dockerCli,
         Filesystem $filesystem)
     {
         $this->buildDirectory = $buildDirectory;
         $this->filesystem = $filesystem;
-        $this->dockerCommands = $dockerCommands;
+        $this->dockerCommand = $dockerCommand;
+        $this->dockerCli = str_replace('{buildDirectory}', $buildDirectory, $dockerCli);
     }
 
     public function prepareDocker(string $archivePath): void
@@ -32,11 +35,7 @@ final class DockerService
 
     public function buildPackage(SymfonyStyle $io): bool
     {
-        $packageBuild = Process::fromShellCommandline(
-            'docker run -v '
-            . $this->buildDirectory
-            . ':/tmp/package archlinux /bin/bash -c "chmod +x /tmp/package/build.sh; /tmp/package/build.sh"'
-        );
+        $packageBuild = Process::fromShellCommandline($this->dockerCli);
         $packageBuild->setTimeout(0);
 
         $packageBuild->run(function($type, $buffer) use ($io) {
@@ -68,7 +67,7 @@ final class DockerService
         {
             $this->filesystem->copy($archivePath . '/PKGBUILD', $this->buildDirectory . '/PKGBUILD');
             $this->filesystem->chmod($this->buildDirectory . '/PKGBUILD', 0744);
-            $this->filesystem->copy($this->dockerCommands, $this->buildDirectory . '/build.sh');
+            $this->filesystem->copy($this->dockerCommand, $this->buildDirectory . '/build.sh');
         } catch (IOException $exception) {
             throw new FileSystemException('Unable to copy build files');
         }
