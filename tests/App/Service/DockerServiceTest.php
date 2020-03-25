@@ -57,14 +57,14 @@ class DockerServiceTest extends TestCase
         $this->expectExceptionMessage('Build directory must be writable');
 
         $fileSystem = $this->prophesize(Filesystem::class);
-        $fileSystem->exists(Argument::exact('/usr'))
+        $fileSystem->exists(Argument::exact('/chindit'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
-        $fileSystem->exists(Argument::exact('/usr'))
+        $fileSystem->exists(Argument::exact('/chindit'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
 
-        $dockerService = new DockerService('/usr', '', $fileSystem->reveal());
+        $dockerService = new DockerService('/chindit', '', $fileSystem->reveal());
         $dockerService->prepareDocker('');
     }
 
