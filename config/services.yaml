@@ -4,7 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    dockerCli: 'docker run -v {buildDirectory}:/tmp/package archlinux /bin/bash -c "chmod +x /tmp/package/build.sh; /tmp/package/build.sh"'
+    docker_cli: 'docker run -v {buildDirectory}:/tmp/package archlinux /bin/bash -c "chmod +x /tmp/package/build.sh; /tmp/package/build.sh"'
 
 services:
     # default configuration for services in *this* file
@@ -14,7 +14,7 @@ services:
         bind:
             string $buildDirectory: '%env(string:BUILD_DIRECTORY)%'
             string $dockerCommandFile: '%env(string:DOCKER_COMMAND_FILE)%'
-            string $dockerCli: '%dockercli%'
+            string $dockerCli: '%docker_cli%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

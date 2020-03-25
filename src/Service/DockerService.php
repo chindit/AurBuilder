@@ -17,13 +17,13 @@ final class DockerService
 
     public function __construct(
         string $buildDirectory,
-        string $dockerCommand,
+        string $dockerCommandFile,
         string $dockerCli,
         Filesystem $filesystem)
     {
         $this->buildDirectory = $buildDirectory;
         $this->filesystem = $filesystem;
-        $this->dockerCommand = $dockerCommand;
+        $this->dockerCommand = $dockerCommandFile;
         $this->dockerCli = str_replace('{buildDirectory}', $buildDirectory, $dockerCli);
     }
 

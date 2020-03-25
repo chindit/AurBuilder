@@ -1,4 +1,4 @@
 # «docker» executable is not available in GitHub's actions
 # We just test we have a working process flow
 parameters:
-    dockerCli: 'pwd'
+    docker_cli: 'pwd'
