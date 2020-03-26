@@ -2,7 +2,6 @@
 
 namespace App\Tests\App\Service;
 
-use App\Exception\FileSystemException;
 use App\Exception\InvalidPackageException;
 use App\Service\ArchiveService;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +50,7 @@ class ArchiveServiceTest extends TestCase
 
     public function testCanHandleErrorOnTemporaryFile(): void
     {
-        $this->expectException(FileSystemException::class);
+        $this->expectException(InvalidPackageException::class);
         $this->expectExceptionMessage(
             'Unable to create temporary file.  Error returned is following: Unable to create temporary file'
         );

@@ -9,7 +9,7 @@ use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class AurService
+class AurService
 {
     private const BASE_URL = 'https://aur.archlinux.org/rpc?v=5';
     private HttpClientInterface $httpClient;

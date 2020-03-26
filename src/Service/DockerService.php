@@ -8,7 +8,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
-final class DockerService
+class DockerService
 {
     private string $buildDirectory;
     private string $dockerCli;
@@ -27,6 +27,9 @@ final class DockerService
         $this->dockerCli = str_replace('{buildDirectory}', $buildDirectory, $dockerCli);
     }
 
+    /**
+     * @throws FileSystemException
+     */
     public function prepareDocker(string $archivePath): void
     {
         $this->prepareDirectories();

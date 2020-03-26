@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Exception\FileSystemException;
 use App\Exception\InvalidPackageException;
 use Exception;
 use PharData;
@@ -12,7 +11,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use UnexpectedValueException;
 
-final class ArchiveService
+class ArchiveService
 {
     private const BASE_URL = 'https://aur.archlinux.org/';
     private HttpClientInterface $httpClient;
@@ -30,7 +29,7 @@ final class ArchiveService
         {
             $fileName = $this->filesystem->tempnam(sys_get_temp_dir(), uniqid('', true));
         } catch (IOException $exception) {
-            throw new FileSystemException(
+            throw new InvalidPackageException(
                 sprintf('Unable to create temporary file.  Error returned is following: %s', $exception->getMessage())
             );
         }
