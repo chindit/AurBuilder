@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 echo 'Refreshing package list'
-echo "Server = https://archlinux.mailtunnel.eu/$repo/os/$arch" >> /etc/pacman.d/mirrorlist
+echo "Server = https://archlinux.mailtunnel.eu/\$repo/os/\$arch" >> /etc/pacman.d/mirrorlist
 pacman -Sy
 echo 'Installing build utils'
 pacman -S base-devel wget --noconfirm
