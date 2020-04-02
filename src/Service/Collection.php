@@ -5,11 +5,13 @@ namespace App\Service;
 class Collection implements \Iterator
 {
     private array $data;
-    private int $index;
+    private $iterator;
 
     public function __construct(array $data = [])
     {
         $this->data = $data;
+        // Prepare iterator
+        $this->iterator = new \ArrayIterator($this->data);
     }
 
     public function toArray(): array
@@ -19,24 +21,17 @@ class Collection implements \Iterator
 
     public function pluck(string $name): self
     {
-        if (empty($this->data) || !(is_array($this->data[0]) || is_object($this->data[0]))) {
+        if (empty($this->data)) {
             return new self();
         }
 
-        if (is_array($this->data[0])) {
-            $results = new self();
-            foreach ($this->data as $item) {
+        $results = new self();
+        foreach ($this->data as $item) {
+            if (is_array($item)) {
                 if (isset($item[$name])) {
                     $results->push($item[$name]);
                 }
-            }
-
-            return $results;
-        }
-
-        if (is_object($this->data[0])) {
-            $results = new self();
-            foreach ($this->data as $item) {
+            } elseif (is_object($item)) {
                 if (method_exists($item, $name)) {
                     $results->push($item->$name());
                 } elseif (method_exists($item, 'get' . ucfirst($name))) {
@@ -46,11 +41,9 @@ class Collection implements \Iterator
                     $results->push($item->$name);
                 }
             }
-
-            return $results;
         }
 
-        return new self();
+        return $results;
     }
 
     public function push($item): self
@@ -117,37 +110,28 @@ class Collection implements \Iterator
         return array_values($this->data);
     }
 
-    private function getValues($item)
-    {
-        return array_values($item);
-    }
-
     public function current()
     {
-        if ($this->valid()) {
-            return $this->data[$this->index];
-        }
-
-        return null;
+        return $this->iterator->current();
     }
 
     public function next(): void
     {
-        $this->index++;
+        $this->iterator->next();
     }
 
     public function key()
     {
-        return $this->index;
+        return $this->iterator->key();
     }
 
     public function valid(): bool
     {
-        return $this->index >= 0 && $this->index < count($this->data);
+        return $this->iterator->valid();
     }
 
     public function rewind(): void
     {
-        $this->index = 0;
+        $this->iterator->rewind();
     }
 }
