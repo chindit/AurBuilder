@@ -19,8 +19,6 @@ jobs:
 
       - name: PHPCS
         uses: chindit/actions-phpcs@master
-        with:
-          dir: src/
 
       - name: PHPUnit
         uses: chindit/actions-phpunit-symfony@master
