@@ -84,8 +84,8 @@ class Release
         return $this;
     }
 
-    public function getUpdatedAt(): ?CarbonImmutable
+    public function getUpdatedAt(): CarbonImmutable
     {
-        return $this->updatedAt ? CarbonImmutable::instance($this->updatedAt) : null;
+        return CarbonImmutable::instance($this->updatedAt);
     }
 }

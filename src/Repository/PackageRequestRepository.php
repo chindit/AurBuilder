@@ -19,6 +19,11 @@ class PackageRequestRepository extends ServiceEntityRepository
         parent::__construct($registry, PackageRequest::class);
     }
 
+	/**
+	 * @param array<string> $names
+	 *
+	 * @return array<array<string>>
+	 */
     public function findRequestedPackageNames(array $names): array
     {
         return $this->createQueryBuilder('r')

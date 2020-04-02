@@ -88,6 +88,11 @@ class Collection implements \Iterator
         return $this;
     }
 
+    public function first()
+    {
+    	return count($this->data) > 0 ? $this->data[0] : null;
+    }
+
     public function flatten(int $depth = 500): self
     {
         $result = [];

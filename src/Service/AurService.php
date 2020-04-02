@@ -24,15 +24,18 @@ class AurService
         $package = $this->makeRequest($packageName);
 
         return new PackageInformation(
-            $package[0]['ID'],
-            $package[0]['Name'],
-            $package[0]['URLPath'],
-            $package[0]['Version'],
-            $package[0]['LastModified'],
-            $package[0]['Description']
+            $package->first()['ID'],
+            $package->first()['Name'],
+            $package->first()['URLPath'],
+            $package->first()['Version'],
+            $package->first()['LastModified'],
+            $package->first()['Description']
         );
     }
 
+	/**
+	 * @return array<PackageInformation>
+	 */
     public function searchPackages(string $packageName): array
     {
         $packages = $this->makeRequest($packageName, 'search');
@@ -54,7 +57,7 @@ class AurService
         return $results;
     }
 
-    private function makeRequest(string $packageName, string $searchType='info'): array
+    private function makeRequest(string $packageName, string $searchType='info'): Collection
     {
         try
         {
@@ -72,6 +75,6 @@ class AurService
             throw new PackageNotFoundException(sprintf('Package %s doesn\'t exist.', $packageName));
         }
 
-        return $packageInformation['results'];
+        return new Collection($packageInformation['results']);
     }
 }

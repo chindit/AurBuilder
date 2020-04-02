@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -49,7 +50,7 @@ class Package
     /**
      * @ORM\ManyToOne(targetEntity="Release")
      */
-    private $releases;
+    private Collection $releases;
 
     public function getId(): ?int
     {
