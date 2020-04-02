@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <ul>
+        <li><a href="{{ url("package_search") }}">Looking for a specific package ?</a></li>
+        <li><a href="{{ url("package_list") }}">Want to see all our packages ?</a></li>
+    </ul>
+
+    {% for flashType, flashMessage in app.session.flashBag.all %}
+        <div class="uk-alert-{{ flashType }}" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>{{ flashMessage[0] }}</p>
+        </div>
+    {% endfor %}
+
+    <h3>Last updated packages</h3>
+
+    <table class="uk-table uk-table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Previous version</th>
+            <th>Current version</th>
+            <th>Update date</th>
+        </tr>
+        </thead>
+        {% if releases|length > 10 %}
+        <tfoot>
+        <tr>
+            <td>Name</td>
+            <td>Previous version</td>
+            <td>Current version</td>
+            <td>Update date</td>
+        </tr>
+        </tfoot>
+        {% endif %}
+        <tbody>
+        {% for update in releases %}
+            <tr>
+                <td>
+                    {{ update.name }}
+                </td>
+                <td>
+                    {{ update.lastVersion }}
+                </td>
+                <td>
+                    {{ update.newVersion }}
+                </td>
+                <td>
+                    {{ update.updatedAt }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">
+                    No packages were update last 14 days
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

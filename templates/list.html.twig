@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h3>Our packages</h3>
+
+    <p>Package not found ?</p>
+    <p>You can <a href="{{ url("package_search") }}">request a package</a></p>
+
+    <table class="uk-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Last update</th>
+        </tr>
+        </thead>
+        {% if packages|length > 10 %}
+            <tfoot>
+            <tr>
+                <td>Name</td>
+                <td>Version</td>
+                <td>Last update</td>
+            </tr>
+            </tfoot>
+        {% endif %}
+        <tbody>
+        {% for package in packages %}
+            <tr>
+                <td>
+                    {{ package.name }}
+                </td>
+                <td>
+                    {{ package.version }}
+                </td>
+                <td>
+                    {% if package.updatedAt is null %}
+                        {{ package.createdAt }}
+                    {% else %}
+                        {{ package.updatedAt }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

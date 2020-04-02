@@ -10,6 +10,8 @@ final class PackageInformation
     private string $version;
     private string $url;
     private \DateTimeImmutable $lastModified;
+    private bool $inRespository;
+    private bool $requested;
 
     public function __construct(
         int $id,
@@ -26,6 +28,8 @@ final class PackageInformation
         $this->version = $version;
         $this->lastModified = (new \DateTimeImmutable())->setTimestamp($lastModified);
         $this->description = $description;
+        $this->inRespository = false;
+        $this->requested = false;
     }
 
     public function getName(): string
@@ -41,5 +45,29 @@ final class PackageInformation
     public function getUrl(): string
     {
         return $this->url;
+    }
+
+    public function isInRepository(): bool
+    {
+        return $this->inRespository;
+    }
+
+    public function setInRepository(bool $state): self
+    {
+        $this->inRespository = $state;
+
+        return $this;
+    }
+
+    public function isRequested(): bool
+    {
+        return $this->requested;
+    }
+
+    public function setRequested(bool $requested): self
+    {
+        $this->requested = $requested;
+
+        return $this;
     }
 }

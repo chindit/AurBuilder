@@ -15,4 +15,6 @@
     <file>src/</file>
     <file>tests/</file>
 
+    <exclude-pattern>src/Migrations/*</exclude-pattern>
+
 </ruleset>

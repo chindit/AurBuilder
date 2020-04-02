@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Chindit's repository</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ asset('css/uikit.min.css') }}" />
+    <script src="{{ asset('js/uikit.min.js') }}"></script>
+    <script src="{{ asset('js/uikit-icons.min.js') }}"></script>
+    <style>
+        .content {
+            margin: 25px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html.twig' %}
+    <div class="content">
+        <h1>Chindit's repository</h1>
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

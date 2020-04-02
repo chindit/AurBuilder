@@ -21,9 +21,45 @@ class AurService
 
     public function getPackageInformation(string $packageName): PackageInformation
     {
+        $package = $this->makeRequest($packageName);
+
+        return new PackageInformation(
+            $package[0]['ID'],
+            $package[0]['Name'],
+            $package[0]['URLPath'],
+            $package[0]['Version'],
+            $package[0]['LastModified'],
+            $package[0]['Description']
+        );
+    }
+
+    public function searchPackages(string $packageName): array
+    {
+        $packages = $this->makeRequest($packageName, 'search');
+
+        $results = [];
+
+        foreach ($packages as $package)
+        {
+            $results[] = new PackageInformation(
+                $package['ID'],
+                $package['Name'],
+                $package['URLPath'],
+                $package['Version'],
+                $package['LastModified'],
+                $package['Description']
+            );
+        }
+
+        return $results;
+    }
+
+    private function makeRequest(string $packageName, string $searchType='info'): array
+    {
         try
         {
-            $query = $this->httpClient->request('GET', self::BASE_URL . '&type=info&arg[]=' . $packageName);
+            $queryParams = $searchType === 'info' ? '&type=info&arg[]=' : '&type=search&arg=';
+            $query = $this->httpClient->request('GET', self::BASE_URL . $queryParams . $packageName);
 
             $packageInformation = $query->toArray();
         } catch (HttpExceptionInterface | TransportException $exception) {
@@ -36,13 +72,6 @@ class AurService
             throw new PackageNotFoundException(sprintf('Package %s doesn\'t exist.', $packageName));
         }
 
-        return new PackageInformation(
-            $packageInformation['results'][0]['ID'],
-            $packageInformation['results'][0]['Name'],
-            $packageInformation['results'][0]['URLPath'],
-            $packageInformation['results'][0]['Version'],
-            $packageInformation['results'][0]['LastModified'],
-            $packageInformation['results'][0]['Description']
-        );
+        return $packageInformation['results'];
     }
 }

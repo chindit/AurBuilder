@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h3>Search for your package</h3>
+    <h5>(If your package is not in the repository, you will be
+    able to request it after your search)</h5>
+
+    {% if packages is not null and packages is empty %}
+    <div class="uk-alert-danger" uk-alert>
+        <a class="uk-alert-close" uk-close></a>
+        <p>Your search didn't return any result.  Are you sure you haven't misspelt the package name ?</p>
+    </div>
+    {% endif %}
+
+    <form class="uk-form-horizontal" method="post" action="{{ url('package_search') }}?XDEBUG_SESSION_START=1">
+        <div class="uk-margin">
+            <label class="uk-form-label">Your search : </label>
+            <div class="uk-form-controls">
+                <div class="uk-inline">
+                    <span class="uk-form-icon" uk-icon="icon: search"></span>
+                    <input class="uk-input" name="package" type="text" minlength="3" value="{{ app.request.get('package') }}" required>
+                </div>
+            </div>
+            <button type="submit" class="uk-button">Search</button>
+        </div>
+    </form>
+
+    {% if packages is not null and packages is not empty %}
+    <h3 class="uk-text-bold">{{ packages|length }} result(s) for «{{ app.request.get('package') }}»</h3>
+    <table class="uk-table uk-table-striped uk-table-hover uk-table-middle">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Current version</th>
+            <th>Link</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        {% if packages|length > 10 %}
+            <tfoot>
+            <tr>
+                <td>Name</td>
+                <td>Version</td>
+                <td>Link</td>
+                <td>Actions</td>
+            </tr>
+            </tfoot>
+        {% endif %}
+        <tbody>
+        {% for package in packages %}
+            <tr>
+                <td>
+                    {{ package.name }}
+                </td>
+                <td>
+                    {{ package.version }}
+                </td>
+                <td>
+                    <a href="https://aur.archlinux.org/packages/{{ package.name }}/">
+                        https://aur.archlinux.org/packages/{{ package.name }}/
+                    </a>
+                </td>
+                <td class="uk-text-center">
+                    {% if package.inRepository %}
+                        <span class="uk-badge uk-badge-success">In repo</span>
+                    {% elseif package.requested %}
+                        <span class="uk-badge uk-badge-warning">Requested</span>
+                    {% else %}
+                        <a href="{{ url('package_suggest', {'package': package.name}) }}" class="uk-button uk-button-primary" title="Package not in repo.  Click to request it">Request</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+{% endblock %}
