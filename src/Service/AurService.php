@@ -33,9 +33,9 @@ class AurService
         );
     }
 
-	/**
-	 * @return array<PackageInformation>
-	 */
+    /**
+     * @return array<PackageInformation>
+     */
     public function searchPackages(string $packageName): array
     {
         $packages = $this->makeRequest($packageName, 'search');

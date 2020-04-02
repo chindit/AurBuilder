@@ -19,9 +19,9 @@ class PackageRepository extends ServiceEntityRepository
         parent::__construct($registry, Package::class);
     }
 
-	/**
-	 * @return array<Package>
-	 */
+    /**
+     * @return array<Package>
+     */
     public function findAllSortedByUpdate(): array
     {
         return $this->createQueryBuilder('p')
@@ -30,9 +30,9 @@ class PackageRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-	/**
-	 * @return array<Package>
-	 */
+    /**
+     * @return array<Package>
+     */
     public function findAllSortedByName(): array
     {
         return $this->createQueryBuilder('p')
@@ -41,11 +41,11 @@ class PackageRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-	/**
-	 * @param array<string> $names
-	 *
-	 * @return array<array<string>>
-	 */
+    /**
+     * @param array<string> $names
+     *
+     * @return array<array<string>>
+     */
     public function findExistingPackageNames(array $names): array
     {
         return $this->createQueryBuilder('p')

@@ -20,9 +20,9 @@ class ReleaseRepository extends ServiceEntityRepository
         parent::__construct($registry, Release::class);
     }
 
-	/**
-	 * @return array<Release>
-	 */
+    /**
+     * @return array<Release>
+     */
     public function findLastUpdated(): array
     {
         return $this->createQueryBuilder('r')
