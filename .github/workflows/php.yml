@@ -4,6 +4,14 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+services:
+  mysql:
+    image: mysql:5.7
+    env:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: aur_test
+    ports:
+      - 3306
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,6 +21,9 @@ jobs:
 
       - name: Validate composer.json and composer.lock
         run: composer validate
+
+      - name: Setup fixtures
+        run: php bin/console doctrine:fixtures:load --no-interaction
 
       - name: PHPStan
         uses: chindit/actions-phpstan@master

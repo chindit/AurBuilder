@@ -22,17 +22,6 @@ class PackageRepository extends ServiceEntityRepository
     /**
      * @return array<Package>
      */
-    public function findAllSortedByUpdate(): array
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.updatedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @return array<Package>
-     */
     public function findAllSortedByName(): array
     {
         return $this->createQueryBuilder('p')
