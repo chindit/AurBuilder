@@ -26,7 +26,7 @@ jobs:
         run: composer validate
 
       - name: Setup fixtures
-        run: php bin/console doctrine:fixtures:load --no-interaction
+        run: php bin/console doctrine:fixtures:load --no-interaction --env=test
 
       - name: PHPStan
         uses: chindit/actions-phpstan@master
