@@ -15,6 +15,8 @@
     <file>src/</file>
     <file>tests/</file>
 
+	<exclude-pattern>var/*</exclude-pattern>
+	<exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>src/Migrations/*</exclude-pattern>
 
 </ruleset>
