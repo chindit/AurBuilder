@@ -27,6 +27,9 @@ jobs:
       - name: Validate composer.json and composer.lock
         run: composer validate
 
+      - name: Create database schema
+        run: php bin/console doctrine:schema:update --force --env=test
+
       - name: Setup fixtures
         run: php bin/console doctrine:fixtures:load --no-interaction --env=test
 
