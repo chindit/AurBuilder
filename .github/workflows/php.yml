@@ -18,7 +18,7 @@ jobs:
           MYSQL_USER: phpunit
           MYSQL_PASSWORD: phpunit
           MYSQL_DATABASE: aur_test
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=5s --health-retries=3
 
     steps:
       - uses: actions/checkout@v2
