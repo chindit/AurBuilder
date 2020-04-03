@@ -13,12 +13,11 @@ jobs:
       mariadb:
         image: mariadb:latest
         ports:
-          - 3306
+          - 3306:3306
         env:
-          MYSQL_USER: phpunit
-          MYSQL_PASSWORD: phpunit
+          MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: aur_test
-          options: --health-cmd="mysqladmin ping" --health-interval=15s --health-timeout=12s --health-retries=13
+          options: --health-cmd="mysqladmin ping" --health-interval=15s --health-timeout=10s --health-retries=5
 
     steps:
       - uses: actions/checkout@v2
