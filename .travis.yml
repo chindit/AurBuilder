@@ -10,7 +10,7 @@ addons:
         update: true
 
 before_install:
-    - mysql -e 'CREATE DATABASE aur_test;'
+    - sudo mysql -e 'CREATE DATABASE aur_test;'
 
 install:
     - composer install
