@@ -28,6 +28,7 @@
                 <file>src/Kernel.php</file>
                 <directory>src/DataFixtures</directory>
                 <directory>src/Migrations</directory>
+                <directory>src/Exception</directory>
             </exclude>
         </whitelist>
     </filter>
