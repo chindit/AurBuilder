@@ -76,6 +76,13 @@ class Package
         return $this->version;
     }
 
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
     public function getUpdatedAt(): ?CarbonImmutable
     {
         return $this->updatedAt ? CarbonImmutable::instance($this->updatedAt) : null;
