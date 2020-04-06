@@ -105,9 +105,8 @@ class PackageController extends AbstractController
             $this->addFlash('success', sprintf('Package «%s» has been successfully requested.', $package));
         } catch (\Exception $e) {
             $this->addFlash('danger', sprintf('Package «%s» does not exists.', $package));
-        } finally {
-            return $this->redirectToRoute('packages');
         }
 
+        return $this->redirectToRoute('packages');
     }
 }
