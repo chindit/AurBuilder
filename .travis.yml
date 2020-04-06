@@ -33,5 +33,6 @@ script:
     - php bin/phpunit --testdox --coverage-clover ./tests/logs/clover.xml
 
 after_script:
-    - ./test-reporter after-build -t clover -p ./tests/logs/
+    - ./test-reporter format-coverage -t clover -p ./tests/logs/clover.xml
+    - ./test-reporter upload-coverage
     - travis_retry php php-coveralls.phar -v
