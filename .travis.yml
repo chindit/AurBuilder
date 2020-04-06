@@ -1,12 +1,11 @@
 language: php
 php:
     - '7.4'
-    - nightly
 os: linux
 dist: xenial
 
 addons:
-    mariadb: '10.3'
+    mariadb: '10.4'
     apt:
         update: true
 
