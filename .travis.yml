@@ -21,8 +21,7 @@ install:
     - php bin/console doctrine:fixtures:load --no-interaction --env=test
 
 before_script:
-    - composer require codeclimate/php-test-reporter --dev
-    - chmod +x ./vendor/bin/test-reporter
+    - npm install codeclimate-test-reporter instanbul -g
     - ./cc-test-reporter before-build
     - wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
     - chmod +x php-coveralls.phar
@@ -33,5 +32,5 @@ script:
     - php bin/phpunit --testdox --coverage-clover ./clover.xml
 
 after_script:
-    - ./vendor/bin/test-reporter
+    - codeclimate-test-reporter < ./clover.xml
     - travis_retry php php-coveralls.phar -v
