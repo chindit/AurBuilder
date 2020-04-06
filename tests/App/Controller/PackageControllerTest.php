@@ -11,7 +11,6 @@ class PackageControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/');
 
-        $this->assertEquals('', $client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertSelectorTextSame('html body .content h1', 'Chindit\'s repository');
         $this->assertSelectorTextSame('html body .content table tbody tr td', 'chindit');
