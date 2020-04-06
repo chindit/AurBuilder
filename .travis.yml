@@ -4,13 +4,13 @@ php:
 os: linux
 dist: xenial
 
+env:
+    global:
+        - CC_TEST_REPORTER_ID=ced3826aa9df61ac735f0e423a53b332223a874540b92ad09597c15a7df8e7b8
 addons:
     mariadb: '10.3'
     apt:
         update: true
-    code_climate:
-        repo_token:
-            secure: ced3826aa9df61ac735f0e423a53b332223a874540b92ad09597c15a7df8e7b8
 
 before_install:
     - sudo mysql -e 'CREATE DATABASE aur_test;'
