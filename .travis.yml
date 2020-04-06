@@ -21,7 +21,7 @@ install:
     - php bin/console doctrine:fixtures:load --no-interaction --env=test
 
 before_script:
-    - wget -o=test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+    - wget -o test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
     - chmod +x ./test-reporter
     - wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
     - chmod +x php-coveralls.phar
