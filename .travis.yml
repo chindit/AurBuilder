@@ -29,8 +29,8 @@ before_script:
 script:
     - ./vendor/bin/phpcs
     - ./vendor/bin/phpstan analyse -c phpstan.neon
-    - php bin/phpunit --testdox --coverage-clover ./clover.xml
+    - php bin/phpunit --testdox --coverage-clover ./tests/logs/clover.xml
 
 after_script:
-    - ./test-reporter after-build -t clover clover.xml
+    - ./test-reporter after-build ./tests/logs/clover.xml
     - travis_retry php php-coveralls.phar -v
