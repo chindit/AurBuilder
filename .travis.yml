@@ -4,6 +4,10 @@ php:
 os: linux
 dist: xenial
 
+env:
+    global:
+        - CC_TEST_REPORTER_ID=ced3826aa9df61ac735f0e423a53b332223a874540b92ad09597c15a7df8e7b8
+
 addons:
     mariadb: '10.3'
     apt:
@@ -14,10 +18,20 @@ before_install:
 
 install:
     - composer install
+    - composer require satooshi/php-coveralls:dev-master
     - php bin/console doctrine:migrations:migrate --no-interaction --env=test
     - php bin/console doctrine:fixtures:load --no-interaction --env=test
+
+before_script:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - ./cc-test-reporter before-build
 
 script:
     - ./vendor/bin/phpcs
     - ./vendor/bin/phpstan analyse -c phpstan.neon
-    - php bin/phpunit --testdox
+    - php bin/phpunit --testdox --coverage-clover ./tests/logs/clover.xml
+
+after_script:
+    - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+    - php vendor/bin/coveralls -v
