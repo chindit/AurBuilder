@@ -23,6 +23,7 @@ install:
 before_script:
     - wget -O test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
     - chmod +x ./test-reporter
+    - ./test-reporter before-build
     - wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
     - chmod +x php-coveralls.phar
 
@@ -32,5 +33,5 @@ script:
     - php bin/phpunit --testdox --coverage-clover ./tests/logs/clover.xml
 
 after_script:
-    - ./test-reporter after-build -t clover ./tests/logs/clover.xml
+    - ./test-reporter after-build -t clover -p ./tests/logs/
     - travis_retry php php-coveralls.phar -v
