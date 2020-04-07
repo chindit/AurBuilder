@@ -6,6 +6,7 @@ use App\Entity\Release;
 use Carbon\Carbon;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\NoResultException;
 
 /**
  * @method Release|null find($id, $lockMode = null, $lockVersion = null)

@@ -9,9 +9,11 @@ use App\Exception\PackageNotFoundException;
 use App\Service\ArchiveService;
 use App\Service\AurService;
 use App\Service\DockerService;
+use App\Service\RepositoryService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -22,20 +24,28 @@ class AurBuildCommand extends Command
     private AurService $aurService;
     private ArchiveService $archiveService;
     private DockerService $dockerService;
+    private RepositoryService $repositoryService;
 
-    public function __construct(AurService $aurService, ArchiveService $archiveService, DockerService $dockerService)
+    public function __construct(
+        AurService $aurService,
+        ArchiveService $archiveService,
+        DockerService $dockerService,
+        RepositoryService $repositoryService
+    )
     {
         parent::__construct(self::$defaultName);
         $this->aurService = $aurService;
         $this->archiveService = $archiveService;
         $this->dockerService = $dockerService;
+        $this->repositoryService = $repositoryService;
     }
 
     protected function configure(): void
     {
         $this
             ->setDescription('Build an ArchLinux package based on an AUR package name')
-            ->addArgument('package', InputArgument::REQUIRED, 'AUR Package name');
+            ->addArgument('package', InputArgument::REQUIRED, 'AUR Package name')
+            ->addOption('update', '-u', InputOption::VALUE_OPTIONAL, 'Add package(s) to repository', false);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -86,6 +96,18 @@ class AurBuildCommand extends Command
             $io->success('Package successfully built');
         } else {
             $io->error('An error has occurred during build process');
+
+            return 3;
+        }
+
+        if ($input->getOption('update') !== false) {
+            if ($this->repositoryService->addPackagesToRepository($package)) {
+                $io->success('Repository updated');
+            } else {
+                $io->error('Unable to update repository');
+
+                return 4;
+            }
         }
 
         return 0;

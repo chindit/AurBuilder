@@ -43,11 +43,6 @@ class Release
         $this->updatedAt = new \DateTime();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function getName(): ?string
     {
         return $this->name;

@@ -10,6 +10,7 @@ use App\Model\PackageInformation;
 use App\Service\ArchiveService;
 use App\Service\AurService;
 use App\Service\DockerService;
+use App\Service\RepositoryService;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -25,7 +26,8 @@ class AurBuildCommandTest extends TestCase
         $aurCommand = new AurBuildCommand(
             $this->prophesize(AurService::class)->reveal(),
             $this->prophesize(ArchiveService::class)->reveal(),
-            $this->prophesize(DockerService::class)->reveal()
+            $this->prophesize(DockerService::class)->reveal(),
+            $this->prophesize(RepositoryService::class)->reveal()
         );
 
         $this->assertEquals('aur:build', $aurCommand->getName());
@@ -47,7 +49,8 @@ class AurBuildCommandTest extends TestCase
         $aurCommand = new AurBuildCommand(
             $this->prophesize(AurService::class)->reveal(),
             $this->prophesize(ArchiveService::class)->reveal(),
-            $this->prophesize(DockerService::class)->reveal()
+            $this->prophesize(DockerService::class)->reveal(),
+            $this->prophesize(RepositoryService::class)->reveal()
         );
 
         $this->assertEquals(
@@ -77,7 +80,8 @@ class AurBuildCommandTest extends TestCase
         $aurCommand = new AurBuildCommand(
             $aurService->reveal(),
             $this->prophesize(ArchiveService::class)->reveal(),
-            $this->prophesize(DockerService::class)->reveal()
+            $this->prophesize(DockerService::class)->reveal(),
+            $this->prophesize(RepositoryService::class)->reveal()
         );
 
         $inputInterface = $this->prophesize(InputInterface::class);
@@ -131,7 +135,8 @@ class AurBuildCommandTest extends TestCase
         $aurCommand = new AurBuildCommand(
             $aurService->reveal(),
             $archiveService->reveal(),
-            $this->prophesize(DockerService::class)->reveal()
+            $this->prophesize(DockerService::class)->reveal(),
+            $this->prophesize(RepositoryService::class)->reveal()
         );
 
         $inputInterface = $this->prophesize(InputInterface::class);
@@ -191,7 +196,8 @@ class AurBuildCommandTest extends TestCase
         $aurCommand = new AurBuildCommand(
             $aurService->reveal(),
             $archiveService->reveal(),
-            $dockerService->reveal()
+            $dockerService->reveal(),
+            $this->prophesize(RepositoryService::class)->reveal()
         );
 
         $inputInterface = $this->prophesize(InputInterface::class);
@@ -254,7 +260,8 @@ class AurBuildCommandTest extends TestCase
         $aurCommand = new AurBuildCommand(
             $aurService->reveal(),
             $archiveService->reveal(),
-            $dockerService->reveal()
+            $dockerService->reveal(),
+            $this->prophesize(RepositoryService::class)->reveal()
         );
 
         $inputInterface = $this->prophesize(InputInterface::class);
@@ -271,7 +278,7 @@ class AurBuildCommandTest extends TestCase
             ->shouldBecalledOnce();
 
         $this->assertEquals(
-            0,
+            3,
             $executeMethod->invokeArgs(
                 $aurCommand,
                 [
@@ -282,7 +289,7 @@ class AurBuildCommandTest extends TestCase
         );
     }
 
-    public function testBuildPackageSuccess(): void
+    public function testBuildPackageSuccessWithoutUpdate(): void
     {
         $aurCommandClass = new \ReflectionClass(AurBuildCommand::class);
         $executeMethod = $aurCommandClass->getMethod('execute');
@@ -324,7 +331,8 @@ class AurBuildCommandTest extends TestCase
         $aurCommand = new AurBuildCommand(
             $aurService->reveal(),
             $archiveService->reveal(),
-            $dockerService->reveal()
+            $dockerService->reveal(),
+            $this->prophesize(RepositoryService::class)->reveal()
         );
 
         $inputInterface = $this->prophesize(InputInterface::class);
@@ -332,10 +340,175 @@ class AurBuildCommandTest extends TestCase
             ->getArgument(Argument::exact('package'))
             ->shouldBeCalledOnce()
             ->willReturn('chindit');
+        $inputInterface
+            ->getOption(Argument::exact('update'))
+            ->shouldBeCalledOnce()
+            ->willReturn(false);
 
         $outputInterface = $this->getOutputInterface();
         $outputInterface->writeln(Argument::containingString('Package successfully built'), Argument::exact(1))
             ->shouldBecalledOnce();
+
+        $this->assertEquals(
+            0,
+            $executeMethod->invokeArgs(
+                $aurCommand,
+                [
+                    $inputInterface->reveal(),
+                    $outputInterface->reveal()
+                ]
+            )
+        );
+    }
+
+    public function testSuccessfulBuildWithFailedUpdate(): void
+    {
+        $aurCommandClass = new \ReflectionClass(AurBuildCommand::class);
+        $executeMethod = $aurCommandClass->getMethod('execute');
+        $executeMethod->setAccessible(true);
+
+        $package = new PackageInformation(
+            23,
+            'chindit',
+            'https://github.com/chindit/AurBuilder',
+            '1.3.2',
+            time(),
+            'Chindit\'s package'
+        );
+        $aurService = $this->prophesize(AurService::class);
+        $aurService
+            ->getPackageInformation(Argument::exact('chindit'))
+            ->shouldBeCalledOnce()
+            ->willReturn(
+                $package
+            );
+
+        $archiveService = $this->prophesize(ArchiveService::class);
+        $archiveService
+            ->getBuildInformation(
+                Argument::exact('https://github.com/chindit/AurBuilder'),
+                Argument::exact('chindit')
+            )
+            ->shouldBeCalledOnce()
+            ->willReturn('/path/to/chindit/package');
+
+        $dockerService = $this->prophesize(DockerService::class);
+        $dockerService
+            ->prepareDocker(Argument::exact('/path/to/chindit/package'))
+            ->shouldBeCalledOnce();
+        $dockerService
+            ->buildPackage(Argument::any())
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
+        $repositoryService = $this->prophesize(RepositoryService::class);
+        $repositoryService
+            ->addPackagesToRepository(Argument::exact($package))
+            ->shouldBeCalledOnce()
+            ->willReturn(false);
+
+        $aurCommand = new AurBuildCommand(
+            $aurService->reveal(),
+            $archiveService->reveal(),
+            $dockerService->reveal(),
+            $repositoryService->reveal()
+        );
+
+        $inputInterface = $this->prophesize(InputInterface::class);
+        $inputInterface
+            ->getArgument(Argument::exact('package'))
+            ->shouldBeCalledOnce()
+            ->willReturn('chindit');
+        $inputInterface
+            ->getOption(Argument::exact('update'))
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
+
+        $outputInterface = $this->getOutputInterface();
+        $outputInterface->writeln(Argument::containingString('Package successfully built'), Argument::exact(1))
+            ->shouldBeCalledOnce();
+        $outputInterface->writeln(Argument::containingString('Unable to update repository'), Argument::exact(1))
+            ->shouldBeCalledOnce();
+
+        $this->assertEquals(
+            4,
+            $executeMethod->invokeArgs(
+                $aurCommand,
+                [
+                    $inputInterface->reveal(),
+                    $outputInterface->reveal()
+                ]
+            )
+        );
+    }
+
+    public function testSuccessfulBuildWithSuccessfulUpdate(): void
+    {
+        $aurCommandClass = new \ReflectionClass(AurBuildCommand::class);
+        $executeMethod = $aurCommandClass->getMethod('execute');
+        $executeMethod->setAccessible(true);
+
+        $package = new PackageInformation(
+            23,
+            'chindit',
+            'https://github.com/chindit/AurBuilder',
+            '1.3.2',
+            time(),
+            'Chindit\'s package'
+        );
+
+        $aurService = $this->prophesize(AurService::class);
+        $aurService
+            ->getPackageInformation(Argument::exact('chindit'))
+            ->shouldBeCalledOnce()
+            ->willReturn(
+                $package
+            );
+
+        $archiveService = $this->prophesize(ArchiveService::class);
+        $archiveService
+            ->getBuildInformation(
+                Argument::exact('https://github.com/chindit/AurBuilder'),
+                Argument::exact('chindit')
+            )
+            ->shouldBeCalledOnce()
+            ->willReturn('/path/to/chindit/package');
+
+        $dockerService = $this->prophesize(DockerService::class);
+        $dockerService
+            ->prepareDocker(Argument::exact('/path/to/chindit/package'))
+            ->shouldBeCalledOnce();
+        $dockerService
+            ->buildPackage(Argument::any())
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
+        $repositoryService = $this->prophesize(RepositoryService::class);
+        $repositoryService
+            ->addPackagesToRepository(Argument::exact($package))
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
+
+        $aurCommand = new AurBuildCommand(
+            $aurService->reveal(),
+            $archiveService->reveal(),
+            $dockerService->reveal(),
+            $repositoryService->reveal()
+        );
+
+        $inputInterface = $this->prophesize(InputInterface::class);
+        $inputInterface
+            ->getArgument(Argument::exact('package'))
+            ->shouldBeCalledOnce()
+            ->willReturn('chindit');
+        $inputInterface
+            ->getOption(Argument::exact('update'))
+            ->shouldBeCalledOnce()
+            ->willReturn(true);
+
+        $outputInterface = $this->getOutputInterface();
+        $outputInterface->writeln(Argument::containingString('Package successfully built'), Argument::exact(1))
+            ->shouldBeCalledOnce();
+        $outputInterface->writeln(Argument::containingString('Repository updated'), Argument::exact(1))
+            ->shouldBeCalledOnce();
 
         $this->assertEquals(
             0,
@@ -361,7 +534,7 @@ class AurBuildCommandTest extends TestCase
 
         $outputInterface = $this->prophesize(OutputInterface::class);
         $outputInterface->getFormatter()
-            ->shouldBeCalledTimes(3)
+                ->shouldBeCalled()
             ->willReturn(
                 $outputFormatter->reveal()
             );

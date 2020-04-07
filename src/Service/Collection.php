@@ -5,7 +5,7 @@ namespace App\Service;
 class Collection implements \Iterator
 {
     private array $data;
-    private $iterator;
+    private \ArrayIterator $iterator;
 
     public function __construct(array $data = [])
     {
@@ -84,6 +84,16 @@ class Collection implements \Iterator
     public function first()
     {
         return count($this->data) > 0 ? $this->data[0] : null;
+    }
+
+    public function isEmpty(): bool
+    {
+        return count($this->data) === 0;
+    }
+
+    public function isNotEmpty(): bool
+    {
+        return !$this->isEmpty();
     }
 
     public function flatten(int $depth = 500): self

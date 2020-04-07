@@ -2,3 +2,4 @@
 # We just test we have a working process flow
 parameters:
     docker_cli: 'pwd'
+    repository_cli: 'pwd'

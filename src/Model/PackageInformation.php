@@ -32,6 +32,11 @@ final class PackageInformation
         $this->requested = false;
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -45,6 +50,11 @@ final class PackageInformation
     public function getUrl(): string
     {
         return $this->url;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     public function isInRepository(): bool

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,6 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PackageRepository")
+ * @ORM\Table(indexes={@ORM\Index(name="package_id", columns={"package_id"})})
  */
 class Package
 {
@@ -19,6 +19,11 @@ class Package
      * @ORM\Column(type="integer")
      */
     private int $id;
+
+    /**
+     * @ORM\Column(type="integer", unique=true)
+     */
+    private int $packageId;
 
     /**
      * @ORM\Column(type="string", length=175, unique=true)
@@ -52,6 +57,18 @@ class Package
      */
     private Collection $releases;
 
+    public function setPackageId(int $packageId): self
+    {
+        $this->packageId = $packageId;
+
+        return $this;
+    }
+
+    public function getPackageId(): int
+    {
+        return $this->packageId;
+    }
+
     public function getName(): ?string
     {
         return $this->name;
@@ -81,6 +98,11 @@ class Package
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getCreatedAt(): CarbonImmutable
+    {
+        return CarbonImmutable::instance($this->createdAt);
     }
 
     public function getUpdatedAt(): ?CarbonImmutable

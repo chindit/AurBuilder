@@ -11,6 +11,7 @@ class PackageFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $package = (new Package())
+            ->setPackageId(23)
             ->setName('chindit')
             ->setVersion('0.0.1')
             ->setDescription('Nic description');
