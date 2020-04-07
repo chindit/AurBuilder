@@ -155,6 +155,22 @@ class CollectionTest extends TestCase
         $this->assertEquals('apple', $collection->first());
     }
 
+    public function testEmptyIsTrue(): void
+    {
+        $collection = new Collection();
+
+        $this->assertTrue($collection->isEmpty());
+        $this->assertFalse($collection->isNotEmpty());
+    }
+
+    public function testIsEmptyIsFalse(): void
+    {
+        $collection = new Collection(['a']);
+
+        $this->assertFalse($collection->isEmpty());
+        $this->assertTrue($collection->isNotEmpty());
+    }
+
     public function testFlattenWithSingleLevelArray(): void
     {
         $collection = new Collection(['apple', 'pear', 'orange']);
