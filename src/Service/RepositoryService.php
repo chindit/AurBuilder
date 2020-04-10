@@ -7,6 +7,7 @@ use App\Entity\Package;
 use App\Entity\Release;
 use App\Model\PackageInformation;
 use App\Repository\PackageRepository;
+use App\Repository\PackageRequestRepository;
 use App\Repository\ReleaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -22,6 +23,7 @@ class RepositoryService
     private Filesystem $filesystem;
     private EntityManagerInterface $entityManager;
     private PackageRepository $packageRepository;
+    private PackageRequestRepository $packageRequestRepository;
 
     public function __construct(
         string $buildDirectory,
@@ -30,7 +32,8 @@ class RepositoryService
         string $repositoryCli,
         Filesystem $filesystem,
         EntityManagerInterface $entityManager,
-        PackageRepository $packageRepository
+        PackageRepository $packageRepository,
+        PackageRequestRepository $packageRequestRepository
     )
     {
         $this->buildDirectory = $buildDirectory;
@@ -40,6 +43,7 @@ class RepositoryService
         $this->entityManager = $entityManager;
         $this->packageRepository = $packageRepository;
         $this->repositoryCli = $repositoryCli;
+        $this->packageRequestRepository = $packageRequestRepository;
     }
 
     public function addPackagesToRepository(PackageInformation $package): bool
@@ -85,6 +89,11 @@ class RepositoryService
             $this->entityManager->persist($package);
         } else {
             $package->setVersion($packageInformation->getVersion());
+        }
+
+        $packageRequest = $this->packageRequestRepository->findOneBy(['name' => $packageInformation->getName()]);
+        if ($packageRequest !== null) {
+            $this->entityManager->remove($packageRequest);
         }
 
         $release = (new Release())

@@ -22,9 +22,19 @@ class PackageRequest
     private string $name;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $approved;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private ?\DateTime $createdAt;
+
+    public function __construct()
+    {
+        $this->approved = false;
+    }
 
     public function getId(): ?int
     {
@@ -39,6 +49,18 @@ class PackageRequest
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approved;
+    }
+
+    public function approve(): self
+    {
+        $this->approved = true;
 
         return $this;
     }

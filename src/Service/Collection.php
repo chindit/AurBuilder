@@ -14,9 +14,126 @@ class Collection implements \Iterator
         $this->iterator = new \ArrayIterator($this->data);
     }
 
-    public function toArray(): array
+    public function all(): array
     {
-        return $this->data;
+        return array_values($this->data);
+    }
+
+    public function contains($search): bool
+    {
+        foreach ($this->data as $item) {
+            if ($item === $search) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function current()
+    {
+        return $this->iterator->current();
+    }
+
+    public function filter($callback): self
+    {
+        if (!is_callable($callback)) {
+            return $this;
+        }
+
+        $accepted = new self();
+
+        foreach ($this->data as $datum) {
+            if ($callback($datum) === true) {
+                $accepted->push($datum);
+            }
+        }
+
+        return $accepted;
+    }
+
+    public function first()
+    {
+        return count($this->data) > 0 ? $this->data[0] : null;
+    }
+
+    public function flatten(int $depth = 500): self
+    {
+        $result = [];
+
+        foreach ($this->data as $item) {
+            $item = $item instanceof Collection ? $item->all() : $item;
+
+            if (!is_array($item)) {
+                $result[] = $item;
+            } elseif ($depth === 1) {
+                $result = array_merge($result, array_values($item));
+            } else {
+                $result = array_merge($result, (new self($item))->flatten($depth - 1)->toArray());
+            }
+        }
+
+        return new self($result);
+    }
+
+    public function get($key, $defaultValue = null)
+    {
+        return $this->has($key) ? $this->data[$key] : $defaultValue;
+    }
+
+    public function has($key): bool
+    {
+        return array_key_exists($key, $this->data);
+    }
+
+    public function isEmpty(): bool
+    {
+        return count($this->data) === 0;
+    }
+
+    public function isNotEmpty(): bool
+    {
+        return !$this->isEmpty();
+    }
+
+    public function key()
+    {
+        return $this->iterator->key();
+    }
+
+    public function keys(): self
+    {
+        return new self(array_keys($this->data));
+    }
+
+    public function map($callback): self
+    {
+        if (!is_callable($callback)) {
+            return $this;
+        }
+
+        $result = [];
+
+        foreach ($this->data as $item) {
+            $result[] = $callback($item);
+        }
+
+        return new self($result);
+    }
+
+    public function merge(self $collection): self
+    {
+        return new self(array_merge($this->data, $collection->toArray()));
+    }
+
+    public function mergeRecursive(self $collection): self
+    {
+        return new self(array_merge_recursive($this->data, $collection->toArray()));
+    }
+
+    public function next(): void
+    {
+        $this->iterator->next();
     }
 
     public function pluck(string $name): self
@@ -53,95 +170,18 @@ class Collection implements \Iterator
         return $this;
     }
 
-    public function contains($search): bool
+    public function rewind(): void
     {
-        foreach ($this->data as $item) {
-            if ($item === $search) {
-                return true;
-            }
-        }
-
-        return false;
+        $this->iterator->rewind();
     }
 
-    public function map($callback): self
+    public function toArray(): array
     {
-        if (!is_callable($callback)) {
-            return $this;
-        }
-
-        $result = [];
-
-        foreach ($this->data as $item) {
-            $result[] = $callback($item);
-        }
-
-        $this->data = $result;
-
-        return $this;
-    }
-
-    public function first()
-    {
-        return count($this->data) > 0 ? $this->data[0] : null;
-    }
-
-    public function isEmpty(): bool
-    {
-        return count($this->data) === 0;
-    }
-
-    public function isNotEmpty(): bool
-    {
-        return !$this->isEmpty();
-    }
-
-    public function flatten(int $depth = 500): self
-    {
-        $result = [];
-
-        foreach ($this->data as $item) {
-            $item = $item instanceof Collection ? $item->all() : $item;
-
-            if (!is_array($item)) {
-                $result[] = $item;
-            } elseif ($depth === 1) {
-                $result = array_merge($result, array_values($item));
-            } else {
-                $result = array_merge($result, (new Collection($item))->flatten($depth - 1)->toArray());
-            }
-        }
-
-        return new Collection($result);
-    }
-
-    public function all(): array
-    {
-        return array_values($this->data);
-    }
-
-    public function current()
-    {
-        return $this->iterator->current();
-    }
-
-    public function next(): void
-    {
-        $this->iterator->next();
-    }
-
-    public function key()
-    {
-        return $this->iterator->key();
+        return $this->data;
     }
 
     public function valid(): bool
     {
         return $this->iterator->valid();
-    }
-
-    public function rewind(): void
-    {
-        $this->iterator->rewind();
     }
 }

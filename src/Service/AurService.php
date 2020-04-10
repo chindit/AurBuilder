@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\Package;
 use App\Exception\PackageNotFoundException;
 use App\Model\PackageInformation;
 use Symfony\Component\HttpClient\Exception\TransportException;
@@ -55,6 +56,32 @@ class AurService
         }
 
         return $results;
+    }
+
+    public function findUpdatablePackages(Collection $packageList): Collection
+    {
+        $packageNames = $packageList->pluck('name');
+
+        return $this
+            ->makeRequest(implode('&arg[]=', $packageNames->toArray()))
+            ->filter(
+                fn(array $infos) =>
+                version_compare(
+                    $infos['Version'],
+                    $packageList->get($infos['Name'], (new Package())->setVersion('0.0'))->getVersion()
+                ) === 1
+            )
+            ->map(function(array $packageData)
+            {
+                return new PackageInformation(
+                    $packageData['ID'],
+                    $packageData['Name'],
+                    $packageData['URLPath'],
+                    $packageData['Version'],
+                    $packageData['LastModified'],
+                    $packageData['Description']
+                );
+            });
     }
 
     private function makeRequest(string $packageName, string $searchType='info'): Collection
