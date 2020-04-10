@@ -66,10 +66,11 @@ class AurCheckUpdatesCommand extends Command
         if ($input->getOption('update') !== false) {
             $application = $this->getApplication();
             if ($application === null) {
-            	$io->error('No application have been found');
+                $io->error('No application have been found');
 
-            	return 1;
+                return 1;
             }
+
             $buildCommand = $application->find('aur:build');
 
             foreach ($packagesToUpdate as $package) {

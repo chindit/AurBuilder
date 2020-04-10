@@ -6,6 +6,7 @@ use App\Entity\Package;
 use App\Entity\Release;
 use App\Model\PackageInformation;
 use App\Repository\PackageRepository;
+use App\Repository\PackageRequestRepository;
 use App\Service\RepositoryService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,8 @@ class RepositoryServiceTest extends TestCase
             '',
             $this->prophesize(Filesystem::class)->reveal(),
             $this->prophesize(EntityManagerInterface::class)->reveal(),
-            $this->prophesize(PackageRepository::class)->reveal()
+            $this->prophesize(PackageRepository::class)->reveal(),
+            $this->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertFalse(
@@ -62,7 +64,8 @@ class RepositoryServiceTest extends TestCase
             '',
             $fileSystem->reveal(),
             $this->prophesize(EntityManagerInterface::class)->reveal(),
-            $this->prophesize(PackageRepository::class)->reveal()
+            $this->prophesize(PackageRepository::class)->reveal(),
+            $this->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertFalse(
@@ -120,7 +123,8 @@ class RepositoryServiceTest extends TestCase
             '',
             $fileSystem->reveal(),
             $entityManager->reveal(),
-            $packageRepository->reveal()
+            $packageRepository->reveal(),
+            $this->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertTrue(
@@ -167,7 +171,8 @@ class RepositoryServiceTest extends TestCase
             '',
             $this->prophesize(Filesystem::class)->reveal(),
             $entityManager->reveal(),
-            $packageRepository->reveal()
+            $packageRepository->reveal(),
+            $this->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $method->invokeArgs(
@@ -219,7 +224,8 @@ class RepositoryServiceTest extends TestCase
             '',
             $this->prophesize(Filesystem::class)->reveal(),
             $entityManager->reveal(),
-            $packageRepository->reveal()
+            $packageRepository->reveal(),
+            $this->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $method->invokeArgs(
@@ -253,7 +259,8 @@ class RepositoryServiceTest extends TestCase
             '{repositoryDir} {repositoryName}{package}',
             $this->prophesize(Filesystem::class)->reveal(),
             $this->prophesize(EntityManagerInterface::class)->reveal(),
-            $this->prophesize(PackageRepository::class)->reveal()
+            $this->prophesize(PackageRepository::class)->reveal(),
+            $this->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertTrue(
