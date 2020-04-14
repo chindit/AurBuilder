@@ -177,7 +177,9 @@ class Collection implements \Iterator
 
     public function toArray(): array
     {
-        return $this->data;
+        return array_map(function ($value) {
+            return $value instanceof self ? $value->toArray() : $value;
+        }, $this->data);
     }
 
     public function valid(): bool

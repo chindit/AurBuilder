@@ -155,12 +155,97 @@ class CollectionTest extends TestCase
         $this->assertEquals('apple', $collection->first());
     }
 
+    public function testFilterWithNotCallableMethod(): void
+    {
+        $collection = new Collection(['apple', 'pear', 'orange']);
+
+        $this->assertEquals($collection, $collection->filter(null));
+    }
+
+    public function testFilterWithNonTrueMethod(): void
+    {
+        $collection = new Collection(['apple', 'pear', 'orange']);
+
+        $this->assertEquals([], $collection->filter(fn(string $item) => $item)->toArray());
+    }
+
+    public function testFilterWithValidCallback(): void
+    {
+        $collection = new Collection(['apple', 'pear', 'orange']);
+
+        $this->assertEquals(
+            ['apple', 'pear'],
+            $collection->filter(fn(string $item) => strpos($item, 'p') !== false)->toArray()
+        );
+    }
+
+    public function testHas(): void
+    {
+        $collection = new Collection(['a' => 'apple', 'p' => 'pear', 'o' => 'orange']);
+
+        $this->assertFalse($collection->has('apple'));
+        $this->assertTrue($collection->has('a'));
+        $this->assertFalse($collection->has(0));
+    }
+
+    public function testGet(): void
+    {
+        $collection = new Collection(['a' => 'apple', 'p' => 'pear', 'o' => 'orange']);
+
+        $this->assertEquals('apple', $collection->get('a'));
+        $this->assertNull($collection->get('banana'));
+        $this->assertEquals('apple', $collection->get('banana', 'apple'));
+    }
+
+    public function testKeys(): void
+    {
+        $collection = new Collection(['a' => 'apple', 'p' => 'pear', 'o' => 'orange']);
+
+        $this->assertEquals(['a', 'p', 'o'], $collection->keys()->toArray());
+    }
+
+    public function testKeysWithStandardArray(): void
+    {
+        $collection = new Collection(['apple', 'pear', 'orange']);
+
+        $this->assertEquals([0, 1, 2], $collection->keys()->toArray());
+    }
+
     public function testEmptyIsTrue(): void
     {
         $collection = new Collection();
 
         $this->assertTrue($collection->isEmpty());
         $this->assertFalse($collection->isNotEmpty());
+    }
+
+    public function testMerge(): void
+    {
+        $first = new Collection(['apple', 'pear']);
+        $second = new Collection(['orange']);
+
+        $this->assertEquals(['apple', 'pear', 'orange'], $first->merge($second)->toArray());
+        $this->assertEquals(['orange', 'apple', 'pear'], $second->merge($first)->toArray());
+    }
+
+    public function testMergeWithSubArrayAndNonRecursive(): void
+    {
+        $first = new Collection(['a' => ['fruits' => ['apple', 'ananas'], 'vegetables' => ['artichoke', 'aubergine']]]);
+        $second = new Collection(['a' => ['vegetables' => ['asparagus']]]);
+
+        // $second will overwrite $first
+        $this->assertEquals($second->toArray(), $first->merge($second)->toArray());
+    }
+
+    public function testMergeRecursive(): void
+    {
+        $first = new Collection(['a' => ['fruits' => ['apple', 'ananas'], 'vegetables' => ['artichoke', 'aubergine']]]);
+        $second = new Collection(['a' => ['vegetables' => ['asparagus']]]);
+
+        $this->assertEquals(
+            ['a' => ['fruits' => ['apple', 'ananas'], 'vegetables' => ['artichoke', 'aubergine', 'asparagus']]],
+            $first->mergeRecursive($second)->toArray()
+        );
     }
 
     public function testIsEmptyIsFalse(): void
@@ -262,5 +347,6 @@ class CollectionTest extends TestCase
         $this->assertEquals('b', $collection->key());
         $collection->rewind();
         $this->assertEquals('a', $collection->key());
+        $this->assertTrue($collection->valid());
     }
 }
