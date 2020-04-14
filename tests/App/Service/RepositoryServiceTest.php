@@ -3,11 +3,13 @@
 namespace App\Tests\App\Service;
 
 use App\Entity\Package;
+use App\Entity\PackageRequest;
 use App\Entity\Release;
 use App\Model\PackageInformation;
 use App\Repository\PackageRepository;
 use App\Repository\PackageRequestRepository;
 use App\Service\RepositoryService;
+use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -141,7 +143,7 @@ class RepositoryServiceTest extends TestCase
         );
     }
 
-    public function testUpdateEntitiesWithNewPackage(): void
+    public function testUpdateEntitiesWithNewPackageAndNoRequest(): void
     {
         $reflection = new \ReflectionClass(RepositoryService::class);
         $method = $reflection->getMethod('updateEntities');
@@ -150,6 +152,12 @@ class RepositoryServiceTest extends TestCase
         $packageRepository = $this->prophesize(PackageRepository::class);
         $packageRepository
             ->findOneBy(Argument::exact(['packageId' => '123']))
+            ->shouldBeCalledOnce()
+            ->willReturn(null);
+
+        $packageRequestRepository = $this->prophesize(PackageRequestRepository::class);
+        $packageRequestRepository
+            ->findOneBy(Argument::exact(['name' => 'chindit']))
             ->shouldBeCalledOnce()
             ->willReturn(null);
 
@@ -172,7 +180,69 @@ class RepositoryServiceTest extends TestCase
             $this->prophesize(Filesystem::class)->reveal(),
             $entityManager->reveal(),
             $packageRepository->reveal(),
-            $this->prophesize(PackageRequestRepository::class)->reveal()
+            $packageRequestRepository->reveal()
+        );
+
+        $method->invokeArgs(
+            $repositoryService,
+            [
+                new PackageInformation(
+                    123,
+                    'chindit',
+                    '',
+                    '',
+                    time(),
+                    ''
+                ),
+            ]
+        );
+    }
+
+    public function testUpdateEntitiesWithNewPackageAndRequest(): void
+    {
+        $reflection = new \ReflectionClass(RepositoryService::class);
+        $method = $reflection->getMethod('updateEntities');
+        $method->setAccessible(true);
+
+        $packageRepository = $this->prophesize(PackageRepository::class);
+        $packageRepository
+            ->findOneBy(Argument::exact(['packageId' => '123']))
+            ->shouldBeCalledOnce()
+            ->willReturn(null);
+
+        $packageRequest = new PackageRequest();
+        $packageRequest->setName('chindit')
+            ->setCreatedAt(Carbon::now());
+
+        $packageRequestRepository = $this->prophesize(PackageRequestRepository::class);
+        $packageRequestRepository
+            ->findOneBy(Argument::exact(['name' => 'chindit']))
+            ->shouldBeCalledOnce()
+            ->willReturn($packageRequest);
+
+        $entityManager = $this->prophesize(EntityManagerInterface::class);
+        $entityManager
+            ->persist(Argument::type(Package::class))
+            ->shouldBeCalledOnce();
+        $entityManager
+            ->persist(Argument::type(Release::class))
+            ->shouldBeCalledOnce();
+        $entityManager
+            ->remove(Argument::exact($packageRequest))
+            ->shouldBeCalledOnce();
+        $entityManager
+            ->flush()
+            ->shouldBeCalledOnce();
+
+        $repositoryService = new RepositoryService(
+            sys_get_temp_dir(),
+            'chindit',
+            '',
+            '',
+            $this->prophesize(Filesystem::class)->reveal(),
+            $entityManager->reveal(),
+            $packageRepository->reveal(),
+            $packageRequestRepository->reveal()
         );
 
         $method->invokeArgs(

@@ -5,9 +5,13 @@ namespace App\Tests\App\Service;
 use App\Exception\PackageNotFoundException;
 use App\Model\PackageInformation;
 use App\Service\AurService;
+use App\Service\Collection;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class AurServiceTest extends TestCase
 {
@@ -193,5 +197,63 @@ class AurServiceTest extends TestCase
 
         $aurService = new AurService($httpEngine);
         $aurService->searchPackages('chindit');
+    }
+
+    public function testUpdatablePackagesSearch(): void
+    {
+        $response = '{"version":5,"type":"multiinfo","resultcount":2,
+    		"results":[{"ID":600377,"Name":"pacaur","PackageBaseID":139631,"PackageBase":"pacaur",
+    		"Version":"4.8.6-1","Description":"An AUR helper that minimizes user interaction",
+    		"URL":"https:\/\/github.com\/E5ten\/pacaur","NumVotes":46,"Popularity":4.659489,
+    		"OutOfDate":null,"Maintainer":"E5ten","FirstSubmitted":1550162333,
+    		"LastModified":1554160585,"URLPath":"\/cgit\/aur.git\/snapshot\/pacaur.tar.gz",
+    		"Depends":["auracle-git","expac","sudo","git","jq"],"MakeDepends":["perl","git"],
+    		"License":["ISC"],"Keywords":[]},{"ID":702647,"Name":"yay","PackageBaseID":115973,
+    		"PackageBase":"yay","Version":"9.4.6-2",
+    		"Description":"Yet another yogurt. Pacman wrapper and AUR helper written in go.",
+    		"URL":"https:\/\/github.com\/Jguer\/yay","NumVotes":1041,"Popularity":74.483161,
+    		"OutOfDate":null,"Maintainer":"jguer","FirstSubmitted":1475688004,"LastModified":1583019462,
+    		"URLPath":"\/cgit\/aur.git\/snapshot\/yay.tar.gz","Depends":["pacman>=5.2","sudo","git"],
+    		"MakeDepends":["go"],"License":["GPL"],"Keywords":["arm","AUR","go","helper","pacman","wrapper","x86"]}]}';
+
+        $responseInterface = $this->prophesize(ResponseInterface::class);
+        $responseInterface
+            ->toArray()
+            ->shouldBeCalledOnce()
+            ->willReturn(json_decode($response, true));
+
+        $httpEngine = $this->prophesize(HttpClientInterface::class);
+        $httpEngine
+            ->request(
+                Argument::exact('GET'),
+                Argument::any()
+            )
+            ->shouldBeCalledOnce()
+            ->willReturn($responseInterface->reveal());
+
+        $aurService = new AurService($httpEngine->reveal());
+        $result = $aurService->findUpdatablePackages(new Collection(['yay', 'pikaur']));
+
+        $this->assertEquals(
+            [
+                new PackageInformation(
+                    600377,
+                    'pacaur',
+                    '/cgit/aur.git/snapshot/pacaur.tar.gz',
+                    '4.8.6-1',
+                    1554160585,
+                    'An AUR helper that minimizes user interaction'
+                ),
+                new PackageInformation(
+                    702647,
+                    'yay',
+                    '/cgit/aur.git/snapshot/yay.tar.gz',
+                    '9.4.6-2',
+                    1583019462,
+                    'Yet another yogurt. Pacman wrapper and AUR helper written in go.'
+                )
+            ],
+            $result->toArray()
+        );
     }
 }
