@@ -75,7 +75,10 @@ class ArchiveService
 
     	$files->each(function(string $file) use ($directory)
 	    {
-	    	$this->filesystem->copy($directory . '/' . $file, $this->buildDirectory . '/' . $file);
+	    	if (!is_dir($directory . '/' . $file))
+		    {
+			    $this->filesystem->copy($directory . '/' . $file, $this->buildDirectory . '/' . $file);
+		    }
 	    });
     }
 }
