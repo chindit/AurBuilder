@@ -37,17 +37,17 @@ class Collection implements \Iterator
 
     public function each($callback): self
     {
-	    if (!is_callable($callback)) {
-		    return $this;
-	    }
+        if (!is_callable($callback)) {
+            return $this;
+        }
 
-	    foreach ($this->data as $datum) {
-		    if ($callback($datum) === false) {
-			    break;
-		    }
-	    }
+        foreach ($this->data as $datum) {
+            if ($callback($datum) === false) {
+                break;
+            }
+        }
 
-	    return $this;
+        return $this;
     }
 
     public function filter($callback): self

@@ -85,12 +85,6 @@ class DockerService
         /** @var array<string> $files */
         $files = scandir($this->buildDirectory);
 
-        $files = (new Collection($files))->filter(fn(string $filename) => substr($filename, -7) === '.tar.xz');
-
-        $files->each(function(string $filename) {
-        	$this->filesystem->copy($filename, $this->buildDirectory . '/' . $filename);
-        });
-
-        return count($files) > 0;
+        return count(array_filter($files, fn(string $filename) => substr($filename, -7) === '.tar.xz')) > 0;
     }
 }
