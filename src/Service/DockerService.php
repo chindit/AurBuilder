@@ -68,8 +68,6 @@ class DockerService
     {
         try
         {
-            $this->filesystem->copy($archivePath . '/PKGBUILD', $this->buildDirectory . '/PKGBUILD');
-            $this->filesystem->chmod($this->buildDirectory . '/PKGBUILD', 0744);
             $this->filesystem->copy($this->dockerCommand, $this->buildDirectory . '/build.sh');
         } catch (IOException $exception) {
             throw new FileSystemException('Unable to copy build files');
