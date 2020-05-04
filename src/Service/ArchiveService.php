@@ -71,7 +71,7 @@ class ArchiveService
 
     private function moveFilesToBuildDirectory(string $directory): void
     {
-    	$files = new Collection(scandir($this->buildDirectory));
+    	$files = new Collection(scandir($directory));
 
     	$files->each(function(string $file) use ($directory)
 	    {
