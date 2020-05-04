@@ -35,6 +35,21 @@ class Collection implements \Iterator
         return $this->iterator->current();
     }
 
+    public function each($callback): self
+    {
+	    if (!is_callable($callback)) {
+		    return $this;
+	    }
+
+	    foreach ($this->data as $datum) {
+		    if ($callback($datum) === false) {
+			    break;
+		    }
+	    }
+
+	    return $this;
+    }
+
     public function filter($callback): self
     {
         if (!is_callable($callback)) {

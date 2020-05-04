@@ -16,11 +16,13 @@ class ArchiveService
     private const BASE_URL = 'https://aur.archlinux.org/';
     private HttpClientInterface $httpClient;
     private Filesystem $filesystem;
+    private string $buildDirectory;
 
-    public function __construct(HttpClientInterface $httpClient, Filesystem $filesystem)
+    public function __construct(HttpClientInterface $httpClient, Filesystem $filesystem, string $buildDirectory)
     {
         $this->httpClient = $httpClient;
         $this->filesystem = $filesystem;
+        $this->buildDirectory = $buildDirectory;
     }
 
     public function getBuildInformation(string $url, string $name): string
@@ -62,6 +64,18 @@ class ArchiveService
             throw new InvalidPackageException(sprintf('Package «%s» is invalid.  No PKGBUILD found', $name));
         }
 
+        $this->moveFilesToBuildDirectory(sys_get_temp_dir() . '/' . $name);
+
         return sys_get_temp_dir() . '/' . $name;
+    }
+
+    private function moveFilesToBuildDirectory(string $directory): void
+    {
+    	$files = new Collection(scandir($this->buildDirectory));
+
+    	$files->each(function(string $file) use ($directory)
+	    {
+	    	$this->filesystem->copy($directory . '/' . $file, $this->buildDirectory . '/' . $file);
+	    });
     }
 }
