@@ -9,8 +9,8 @@ useradd -d /home/packager -G root -m packager
 echo "packager ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 chown -R packager:users /home/packager
 cd /home/packager/ || exit
-echo 'Copying PKGBUILD'
-cp /tmp/package/PKGBUILD .
+echo 'Copying files'
+cp /tmp/package/* .
 echo 'Starting build'
 sudo -u packager makepkg -s --noconfirm
 echo 'Moving back package to exchange directory'
