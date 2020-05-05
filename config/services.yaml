@@ -6,8 +6,8 @@
 parameters:
     docker_cli: 'docker run -v {buildDirectory}:/tmp/package archlinux /bin/bash -c "chmod +x /tmp/package/build.sh; /tmp/package/build.sh"'
     repository_name: 'chindit'
-    repository_dir: '/home/archlinux/chindit'
-    repository_cli: 'repo-add {repositoryDir}/{repositoryName}.db.tar.gz {package}'
+    repository_dir: '/home/chindit'
+    repository_cli: 'repo-add {repositoryDir}/{repositoryName}.db.tar.gz {repositoryDir}/{package}'
 
 services:
     # default configuration for services in *this* file

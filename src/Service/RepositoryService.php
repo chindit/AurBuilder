@@ -64,7 +64,7 @@ class RepositoryService
                     $movedFiles->push($file);
 
                     if ($isSuccessful) {
-                        $isSuccessful = $this->updateRepository($package);
+                        $isSuccessful = $this->updateRepository($file);
                         $this->updateEntities($package);
                     }
                 }
@@ -105,11 +105,11 @@ class RepositoryService
         $this->entityManager->flush();
     }
 
-    private function updateRepository(PackageInformation $package): bool
+    private function updateRepository(string $fileName): bool
     {
         $command = str_replace(
             ['{repositoryDir}', '{repositoryName}', '{package}'],
-            [$this->repositoryDir, $this->repositoryName, $package->getName()],
+            [$this->repositoryDir, $this->repositoryName, $fileName],
             $this->repositoryCli
         );
 
