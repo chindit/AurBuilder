@@ -43,7 +43,7 @@ class ArchiveServiceTest extends AbstractProphetTest
             ->shouldBeCalledOnce()
             ->willReturn($fileName);
 
-        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
+        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal(), '/tmp');
 
         $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
@@ -67,7 +67,7 @@ class ArchiveServiceTest extends AbstractProphetTest
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('Unable to create temporary file'));
 
-        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
+        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal(), '/tmp');
 
         $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
@@ -91,7 +91,7 @@ class ArchiveServiceTest extends AbstractProphetTest
             ->shouldBeCalledOnce()
             ->willReturn(tempnam(sys_get_temp_dir(), ''));
 
-        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
+        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal(), '/tmp');
 
         $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
@@ -113,7 +113,7 @@ class ArchiveServiceTest extends AbstractProphetTest
             ->shouldBeCalledOnce()
             ->willReturn((new Filesystem())->tempnam(sys_get_temp_dir(), uniqid('', true)));
 
-        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
+        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal(), '/tmp');
 
         $archiveService->getBuildInformation('/fake/url', 'chindit');
     }
@@ -132,7 +132,7 @@ class ArchiveServiceTest extends AbstractProphetTest
             ->shouldBeCalledOnce()
             ->willReturn((new Filesystem())->tempnam(sys_get_temp_dir(), uniqid('', true)));
 
-        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal());
+        $archiveService = new ArchiveService($httpEngine, $filesystem->reveal(), '/tmp');
 
         $response = $archiveService->getBuildInformation('/fake/url', 'yay');
 

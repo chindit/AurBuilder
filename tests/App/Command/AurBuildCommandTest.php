@@ -11,7 +11,7 @@ use App\Service\ArchiveService;
 use App\Service\AurService;
 use App\Service\DockerService;
 use App\Service\RepositoryService;
-use PHPUnit\Framework\TestCase;
+use App\Tests\AbstractProphetTest;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AurBuildCommandTest extends TestCase
+class AurBuildCommandTest extends AbstractProphetTest
 {
     public function testDefinitionAndArguments(): void
     {
