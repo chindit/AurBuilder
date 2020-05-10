@@ -71,71 +71,6 @@ class DockerServiceTest extends AbstractProphetTest
         $dockerService->prepareDocker();
     }
 
-    public function testCanHandleFailOnBuildFilesCopy(): void
-    {
-        $this->expectException(FileSystemException::class);
-        $this->expectExceptionMessage('Unable to copy build files');
-
-        $fileSystem = $this->prophet->prophesize(Filesystem::class);
-        $fileSystem->exists(Argument::exact('/tmp'))
-            ->shouldBeCalledOnce()
-            ->willReturn(true);
-        $fileSystem->copy(Argument::exact('/PKGBUILD'), Argument::exact('/tmp/PKGBUILD'))
-            ->shouldBeCalledOnce()
-            ->willThrow(new IOException('Unable to copy'));
-
-        $dockerService = new DockerService('/tmp', '', '', $fileSystem->reveal());
-        $dockerService->prepareDocker();
-    }
-
-    public function testCanChangeChmodOnBuildFiles(): void
-    {
-        $this->expectException(FileSystemException::class);
-        $this->expectExceptionMessage('Unable to copy build files');
-
-        $fileSystem = $this->prophet->prophesize(Filesystem::class);
-        $fileSystem->exists(Argument::exact('/tmp'))
-            ->shouldBeCalledOnce()
-            ->willReturn(true);
-        $fileSystem->copy(Argument::exact('/PKGBUILD'), Argument::exact('/tmp/PKGBUILD'))
-            ->shouldBeCalledOnce()
-            ->willReturn(true);
-        $fileSystem->chmod(Argument::exact('/tmp/PKGBUILD'), Argument::exact(0744))
-            ->shouldBeCalledOnce()
-            ->willThrow(new IOException('Unable to copy'));
-
-        $dockerService = new DockerService('/tmp', '', '', $fileSystem->reveal());
-        $dockerService->prepareDocker('');
-    }
-
-    public function testCanHandleFailOnBuildScriptCopy(): void
-    {
-        $this->expectException(FileSystemException::class);
-        $this->expectExceptionMessage('Unable to copy build files');
-
-        $fileSystem = $this->prophet->prophesize(Filesystem::class);
-        $fileSystem->exists(Argument::exact('/tmp'))
-            ->shouldBeCalledOnce()
-            ->willReturn(true);
-        $fileSystem->copy(Argument::exact('/PKGBUILD'), Argument::exact('/tmp/PKGBUILD'))
-            ->shouldBeCalledOnce()
-            ->willReturn(true);
-        $fileSystem->chmod(Argument::exact('/tmp/PKGBUILD'), Argument::exact(0744))
-            ->shouldBeCalledOnce()
-            ->willReturn(true);
-        $fileSystem->copy(Argument::exact('Resources/dockerTest.sh'), Argument::exact('/tmp/build.sh'))
-            ->shouldBeCalledOnce()
-            ->willThrow(new IOException('Unable to copy'));
-
-        $dockerService = new DockerService(
-            '/tmp',
-            __DIR__ . '/../../Resources/dockerTest.sh',
-            '',
-            $fileSystem->reveal()
-        );
-        $dockerService->prepareDocker('');
-    }
-
     public function testCanCopyRealFilesToRealDirectories(): void
     {
         $dockerService = new DockerService(
@@ -143,7 +78,7 @@ class DockerServiceTest extends AbstractProphetTest
             __DIR__ . '/../../Resources/dockerTest.sh',
             '',
             new Filesystem());
-        $dockerService->prepareDocker('/tmp/t1build');
+        $dockerService->prepareDocker();
 
         $this->assertFileExists('/tmp/t1build/PKGBUILD');
     }

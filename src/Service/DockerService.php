@@ -82,6 +82,7 @@ class DockerService
         );
 
         file_put_contents($this->buildDirectory . '/build.sh', $dockerCommand);
+
     }
 
     private function getRequiredDependencies(): string

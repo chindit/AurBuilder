@@ -250,7 +250,7 @@ class AurBuildCommandTest extends AbstractProphetTest
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
-            ->prepareDocker(Argument::exact('/path/to/chindit/package'))
+            ->prepareDocker()
             ->shouldBeCalledOnce();
         $dockerService
             ->buildPackage(Argument::any())
@@ -321,7 +321,7 @@ class AurBuildCommandTest extends AbstractProphetTest
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
-            ->prepareDocker(Argument::exact('/path/to/chindit/package'))
+            ->prepareDocker()
             ->shouldBeCalledOnce();
         $dockerService
             ->buildPackage(Argument::any())
@@ -394,7 +394,7 @@ class AurBuildCommandTest extends AbstractProphetTest
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
-            ->prepareDocker(Argument::exact('/path/to/chindit/package'))
+            ->prepareDocker()
             ->shouldBeCalledOnce();
         $dockerService
             ->buildPackage(Argument::any())
@@ -475,7 +475,7 @@ class AurBuildCommandTest extends AbstractProphetTest
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
-            ->prepareDocker(Argument::exact('/path/to/chindit/package'))
+            ->prepareDocker()
             ->shouldBeCalledOnce();
         $dockerService
             ->buildPackage(Argument::any())
