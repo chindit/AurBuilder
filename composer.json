@@ -8,7 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "nesbot/carbon": "^2.32",
+        "nesbot/carbon": "^2.33",
         "stof/doctrine-extensions-bundle": "^1.4",
         "symfony/asset": "5.0.*",
         "symfony/console": "5.0.*",
@@ -26,12 +26,12 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
-        "phpstan/phpstan": "^0.12.17",
+        "phpstan/phpstan": "^0.12.23",
         "ramsey/uuid": "^4.0",
         "roave/security-advisories": "dev-master",
         "squizlabs/php_codesniffer": "3.5.*",
         "symfony/debug-pack": "^1.0",
-        "symfony/maker-bundle": "^1.14",
+        "symfony/maker-bundle": "^1.16",
         "symfony/test-pack": "^1.0"
     },
     "config": {

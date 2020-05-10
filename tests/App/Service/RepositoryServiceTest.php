@@ -9,16 +9,17 @@ use App\Model\PackageInformation;
 use App\Repository\PackageRepository;
 use App\Repository\PackageRequestRepository;
 use App\Service\RepositoryService;
+use App\Tests\AbstractProphetTest;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
-class RepositoryServiceTest extends TestCase
+class RepositoryServiceTest extends AbstractProphetTest
 {
+
     public function testAddPackagesWithoutAnyFile(): void
     {
         $repositoryService = new RepositoryService(
@@ -26,10 +27,10 @@ class RepositoryServiceTest extends TestCase
             '',
             '',
             '',
-            $this->prophesize(Filesystem::class)->reveal(),
-            $this->prophesize(EntityManagerInterface::class)->reveal(),
-            $this->prophesize(PackageRepository::class)->reveal(),
-            $this->prophesize(PackageRequestRepository::class)->reveal()
+            $this->prophet->prophesize(Filesystem::class)->reveal(),
+            $this->prophet->prophesize(EntityManagerInterface::class)->reveal(),
+            $this->prophet->prophesize(PackageRepository::class)->reveal(),
+            $this->prophet->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertFalse(
@@ -51,7 +52,7 @@ class RepositoryServiceTest extends TestCase
         $fileName = Uuid::uuid4();
         touch(sys_get_temp_dir() . '/' . $fileName . '.tar.xz');
 
-        $fileSystem = $this->prophesize(Filesystem::class);
+        $fileSystem = $this->prophet->prophesize(Filesystem::class);
         $fileSystem->copy(
             Argument::exact(sys_get_temp_dir() . '/' . $fileName . '.tar.xz'),
             Argument::exact('chindit/' . $fileName . '.tar.xz')
@@ -65,9 +66,9 @@ class RepositoryServiceTest extends TestCase
             '',
             '',
             $fileSystem->reveal(),
-            $this->prophesize(EntityManagerInterface::class)->reveal(),
-            $this->prophesize(PackageRepository::class)->reveal(),
-            $this->prophesize(PackageRequestRepository::class)->reveal()
+            $this->prophet->prophesize(EntityManagerInterface::class)->reveal(),
+            $this->prophet->prophesize(PackageRepository::class)->reveal(),
+            $this->prophet->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertFalse(
@@ -90,7 +91,7 @@ class RepositoryServiceTest extends TestCase
         $packageId = time();
         touch(sys_get_temp_dir() . '/' . $fileName . '.tar.xz');
 
-        $fileSystem = $this->prophesize(Filesystem::class);
+        $fileSystem = $this->prophet->prophesize(Filesystem::class);
         $fileSystem
             ->copy(
                 Argument::exact(sys_get_temp_dir() . '/' . $fileName . '.tar.xz'),
@@ -101,13 +102,13 @@ class RepositoryServiceTest extends TestCase
             ->remove(Argument::exact(sys_get_temp_dir() . '/' . $fileName . '.tar.xz'))
             ->shouldBeCalledOnce();
 
-        $packageRepository = $this->prophesize(PackageRepository::class);
+        $packageRepository = $this->prophet->prophesize(PackageRepository::class);
         $packageRepository
             ->findOneBy(Argument::exact(['packageId' => $packageId]))
             ->shouldBeCalledOnce()
             ->willReturn(null);
 
-        $entityManager = $this->prophesize(EntityManagerInterface::class);
+        $entityManager = $this->prophet->prophesize(EntityManagerInterface::class);
         $entityManager
             ->persist(Argument::type(Package::class))
             ->shouldBeCalledOnce();
@@ -126,7 +127,7 @@ class RepositoryServiceTest extends TestCase
             $fileSystem->reveal(),
             $entityManager->reveal(),
             $packageRepository->reveal(),
-            $this->prophesize(PackageRequestRepository::class)->reveal()
+            $this->prophet->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertTrue(
@@ -149,19 +150,19 @@ class RepositoryServiceTest extends TestCase
         $method = $reflection->getMethod('updateEntities');
         $method->setAccessible(true);
 
-        $packageRepository = $this->prophesize(PackageRepository::class);
+        $packageRepository = $this->prophet->prophesize(PackageRepository::class);
         $packageRepository
             ->findOneBy(Argument::exact(['packageId' => '123']))
             ->shouldBeCalledOnce()
             ->willReturn(null);
 
-        $packageRequestRepository = $this->prophesize(PackageRequestRepository::class);
+        $packageRequestRepository = $this->prophet->prophesize(PackageRequestRepository::class);
         $packageRequestRepository
             ->findOneBy(Argument::exact(['name' => 'chindit']))
             ->shouldBeCalledOnce()
             ->willReturn(null);
 
-        $entityManager = $this->prophesize(EntityManagerInterface::class);
+        $entityManager = $this->prophet->prophesize(EntityManagerInterface::class);
         $entityManager
             ->persist(Argument::type(Package::class))
             ->shouldBeCalledOnce();
@@ -177,13 +178,13 @@ class RepositoryServiceTest extends TestCase
             'chindit',
             '',
             '',
-            $this->prophesize(Filesystem::class)->reveal(),
+            $this->prophet->prophesize(Filesystem::class)->reveal(),
             $entityManager->reveal(),
             $packageRepository->reveal(),
             $packageRequestRepository->reveal()
         );
 
-        $method->invokeArgs(
+        $this->assertNull($method->invokeArgs(
             $repositoryService,
             [
                 new PackageInformation(
@@ -195,7 +196,7 @@ class RepositoryServiceTest extends TestCase
                     ''
                 ),
             ]
-        );
+        ));
     }
 
     public function testUpdateEntitiesWithNewPackageAndRequest(): void
@@ -204,7 +205,7 @@ class RepositoryServiceTest extends TestCase
         $method = $reflection->getMethod('updateEntities');
         $method->setAccessible(true);
 
-        $packageRepository = $this->prophesize(PackageRepository::class);
+        $packageRepository = $this->prophet->prophesize(PackageRepository::class);
         $packageRepository
             ->findOneBy(Argument::exact(['packageId' => '123']))
             ->shouldBeCalledOnce()
@@ -214,13 +215,13 @@ class RepositoryServiceTest extends TestCase
         $packageRequest->setName('chindit')
             ->setCreatedAt(Carbon::now());
 
-        $packageRequestRepository = $this->prophesize(PackageRequestRepository::class);
+        $packageRequestRepository = $this->prophet->prophesize(PackageRequestRepository::class);
         $packageRequestRepository
             ->findOneBy(Argument::exact(['name' => 'chindit']))
             ->shouldBeCalledOnce()
             ->willReturn($packageRequest);
 
-        $entityManager = $this->prophesize(EntityManagerInterface::class);
+        $entityManager = $this->prophet->prophesize(EntityManagerInterface::class);
         $entityManager
             ->persist(Argument::type(Package::class))
             ->shouldBeCalledOnce();
@@ -239,24 +240,26 @@ class RepositoryServiceTest extends TestCase
             'chindit',
             '',
             '',
-            $this->prophesize(Filesystem::class)->reveal(),
+            $this->prophet->prophesize(Filesystem::class)->reveal(),
             $entityManager->reveal(),
             $packageRepository->reveal(),
             $packageRequestRepository->reveal()
         );
 
-        $method->invokeArgs(
-            $repositoryService,
-            [
-                new PackageInformation(
-                    123,
-                    'chindit',
-                    '',
-                    '',
-                    time(),
-                    ''
-                ),
-            ]
+        $this->assertNull(
+            $method->invokeArgs(
+                $repositoryService,
+                [
+                    new PackageInformation(
+                        123,
+                        'chindit',
+                        '',
+                        '',
+                        time(),
+                        ''
+                    ),
+                ]
+            )
         );
     }
 
@@ -273,13 +276,13 @@ class RepositoryServiceTest extends TestCase
             ->setDescription('desc')
             ->setVersion('0.0.1');
 
-        $packageRepository = $this->prophesize(PackageRepository::class);
+        $packageRepository = $this->prophet->prophesize(PackageRepository::class);
         $packageRepository
             ->findOneBy(Argument::exact(['packageId' => '123']))
             ->shouldBeCalledOnce()
             ->willReturn($package);
 
-        $entityManager = $this->prophesize(EntityManagerInterface::class);
+        $entityManager = $this->prophet->prophesize(EntityManagerInterface::class);
         $entityManager
             ->persist(Argument::type(Release::class))
             ->shouldBeCalledOnce();
@@ -292,10 +295,10 @@ class RepositoryServiceTest extends TestCase
             'chindit',
             '',
             '',
-            $this->prophesize(Filesystem::class)->reveal(),
+            $this->prophet->prophesize(Filesystem::class)->reveal(),
             $entityManager->reveal(),
             $packageRepository->reveal(),
-            $this->prophesize(PackageRequestRepository::class)->reveal()
+            $this->prophet->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $method->invokeArgs(
@@ -327,25 +330,16 @@ class RepositoryServiceTest extends TestCase
             'ls',
             '-a',
             '{repositoryDir} {repositoryName}{package}',
-            $this->prophesize(Filesystem::class)->reveal(),
-            $this->prophesize(EntityManagerInterface::class)->reveal(),
-            $this->prophesize(PackageRepository::class)->reveal(),
-            $this->prophesize(PackageRequestRepository::class)->reveal()
+            $this->prophet->prophesize(Filesystem::class)->reveal(),
+            $this->prophet->prophesize(EntityManagerInterface::class)->reveal(),
+            $this->prophet->prophesize(PackageRepository::class)->reveal(),
+            $this->prophet->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertTrue(
             $method->invokeArgs(
                 $repositoryService,
-                [
-                    new PackageInformation(
-                        123,
-                        'l',
-                        '',
-                        '0.0.2',
-                        time(),
-                        ''
-                    ),
-                ]
+                ['h']
             )
         );
     }

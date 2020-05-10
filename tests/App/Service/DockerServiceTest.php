@@ -4,19 +4,22 @@ namespace App\Tests\App\Service;
 
 use App\Exception\FileSystemException;
 use App\Service\DockerService;
-use PHPUnit\Framework\TestCase;
+use App\Tests\AbstractProphetTest;
 use Prophecy\Argument;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 
-class DockerServiceTest extends TestCase
+class DockerServiceTest extends AbstractProphetTest
 {
     protected function setUp(): void
     {
         parent::setUp();
 
-        mkdir('/tmp/t1build');
+        if (!is_dir('/tmp/t1build')) {
+            mkdir('/tmp/t1build');
+        }
+
         touch('/tmp/t1build/PKGBUILD');
         touch('/tmp/t1build/test.tar.xz');
     }
@@ -39,7 +42,7 @@ class DockerServiceTest extends TestCase
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to create build directory');
 
-        $fileSystem = $this->prophesize(Filesystem::class);
+        $fileSystem = $this->prophet->prophesize(Filesystem::class);
         $fileSystem->exists(Argument::exact('/chindit'))
             ->shouldBeCalledOnce()
             ->willReturn(false);
@@ -56,7 +59,7 @@ class DockerServiceTest extends TestCase
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Build directory must be writable');
 
-        $fileSystem = $this->prophesize(Filesystem::class);
+        $fileSystem = $this->prophet->prophesize(Filesystem::class);
         $fileSystem->exists(Argument::exact('/chindit'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -65,7 +68,7 @@ class DockerServiceTest extends TestCase
             ->willReturn(true);
 
         $dockerService = new DockerService('/chindit', '', '', $fileSystem->reveal());
-        $dockerService->prepareDocker('');
+        $dockerService->prepareDocker();
     }
 
     public function testCanHandleFailOnBuildFilesCopy(): void
@@ -73,7 +76,7 @@ class DockerServiceTest extends TestCase
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to copy build files');
 
-        $fileSystem = $this->prophesize(Filesystem::class);
+        $fileSystem = $this->prophet->prophesize(Filesystem::class);
         $fileSystem->exists(Argument::exact('/tmp'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -82,7 +85,7 @@ class DockerServiceTest extends TestCase
             ->willThrow(new IOException('Unable to copy'));
 
         $dockerService = new DockerService('/tmp', '', '', $fileSystem->reveal());
-        $dockerService->prepareDocker('');
+        $dockerService->prepareDocker();
     }
 
     public function testCanChangeChmodOnBuildFiles(): void
@@ -90,7 +93,7 @@ class DockerServiceTest extends TestCase
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to copy build files');
 
-        $fileSystem = $this->prophesize(Filesystem::class);
+        $fileSystem = $this->prophet->prophesize(Filesystem::class);
         $fileSystem->exists(Argument::exact('/tmp'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -110,7 +113,7 @@ class DockerServiceTest extends TestCase
         $this->expectException(FileSystemException::class);
         $this->expectExceptionMessage('Unable to copy build files');
 
-        $fileSystem = $this->prophesize(Filesystem::class);
+        $fileSystem = $this->prophet->prophesize(Filesystem::class);
         $fileSystem->exists(Argument::exact('/tmp'))
             ->shouldBeCalledOnce()
             ->willReturn(true);
@@ -124,7 +127,12 @@ class DockerServiceTest extends TestCase
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('Unable to copy'));
 
-        $dockerService = new DockerService('/tmp', 'Resources/dockerTest.sh', '', $fileSystem->reveal());
+        $dockerService = new DockerService(
+            '/tmp',
+            __DIR__ . '/../../Resources/dockerTest.sh',
+            '',
+            $fileSystem->reveal()
+        );
         $dockerService->prepareDocker('');
     }
 
@@ -142,7 +150,7 @@ class DockerServiceTest extends TestCase
 
     public function testBuildPackage(): void
     {
-        $io = $this->prophesize(SymfonyStyle::class);
+        $io = $this->prophet->prophesize(SymfonyStyle::class);
         $io->writeln(Argument::exact('out:/'))
             ->shouldBeCalledOnce();
 
@@ -151,7 +159,7 @@ class DockerServiceTest extends TestCase
             __DIR__ . '/../../Resources/dockerTest.sh',
             'cd / && pwd',
             new Filesystem());
-        $dockerService->prepareDocker('/tmp/t1build');
+        $dockerService->prepareDocker();
 
         $this->assertTrue($dockerService->buildPackage($io->reveal()));
     }

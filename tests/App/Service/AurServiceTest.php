@@ -6,14 +6,14 @@ use App\Exception\PackageNotFoundException;
 use App\Model\PackageInformation;
 use App\Service\AurService;
 use App\Service\Collection;
-use PHPUnit\Framework\TestCase;
+use App\Tests\AbstractProphetTest;
 use Prophecy\Argument;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class AurServiceTest extends TestCase
+class AurServiceTest extends AbstractProphetTest
 {
     public function testCanHandleEmptyResponse()
     {
@@ -216,13 +216,13 @@ class AurServiceTest extends TestCase
     		"URLPath":"\/cgit\/aur.git\/snapshot\/yay.tar.gz","Depends":["pacman>=5.2","sudo","git"],
     		"MakeDepends":["go"],"License":["GPL"],"Keywords":["arm","AUR","go","helper","pacman","wrapper","x86"]}]}';
 
-        $responseInterface = $this->prophesize(ResponseInterface::class);
+        $responseInterface = $this->prophet->prophesize(ResponseInterface::class);
         $responseInterface
             ->toArray()
             ->shouldBeCalledOnce()
             ->willReturn(json_decode($response, true));
 
-        $httpEngine = $this->prophesize(HttpClientInterface::class);
+        $httpEngine = $this->prophet->prophesize(HttpClientInterface::class);
         $httpEngine
             ->request(
                 Argument::exact('GET'),

@@ -4,14 +4,14 @@ namespace App\Tests\App\Service;
 
 use App\Exception\InvalidPackageException;
 use App\Service\ArchiveService;
-use PHPUnit\Framework\TestCase;
+use App\Tests\AbstractProphetTest;
 use Prophecy\Argument;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
-class ArchiveServiceTest extends TestCase
+class ArchiveServiceTest extends AbstractProphetTest
 {
     protected function tearDown(): void
     {
@@ -37,7 +37,7 @@ class ArchiveServiceTest extends TestCase
         ];
 
         $httpEngine = new MockHttpClient($responses);
-        $filesystem = $this->prophesize(Filesystem::class);
+        $filesystem = $this->prophet->prophesize(Filesystem::class);
         $fileName = tempnam(sys_get_temp_dir(), '');
         $filesystem->tempnam(Argument::any(), Argument::any())
             ->shouldBeCalledOnce()
@@ -62,7 +62,7 @@ class ArchiveServiceTest extends TestCase
         ];
 
         $httpEngine = new MockHttpClient($responses);
-        $filesystem = $this->prophesize(Filesystem::class);
+        $filesystem = $this->prophet->prophesize(Filesystem::class);
         $filesystem->tempnam(Argument::any(), Argument::any())
             ->shouldBeCalledOnce()
             ->willThrow(new IOException('Unable to create temporary file'));
@@ -84,7 +84,7 @@ class ArchiveServiceTest extends TestCase
         ];
 
         $httpEngine = new MockHttpClient($responses);
-        $filesystem = $this->prophesize(Filesystem::class);
+        $filesystem = $this->prophet->prophesize(Filesystem::class);
         $filesystem->exists(Argument::containingString('/tmp/'))->shouldBeCalledTimes(2)->willReturn(true);
         $filesystem->remove(Argument::containingString('/tmp/'))->shouldBeCalledOnce()->willReturn(true);
         $filesystem->tempnam(Argument::any(), Argument::any())
@@ -106,7 +106,7 @@ class ArchiveServiceTest extends TestCase
         ];
 
         $httpEngine = new MockHttpClient($responses);
-        $filesystem = $this->prophesize(Filesystem::class);
+        $filesystem = $this->prophet->prophesize(Filesystem::class);
         $filesystem->exists(Argument::containingString('/tmp/'))->shouldBeCalledTimes(2)->willReturn(true);
         $filesystem->remove(Argument::containingString('/tmp/'))->shouldBeCalledOnce()->willReturn(true);
         $filesystem->tempnam(Argument::any(), Argument::any())
@@ -125,7 +125,7 @@ class ArchiveServiceTest extends TestCase
         ];
 
         $httpEngine = new MockHttpClient($responses);
-        $filesystem = $this->prophesize(Filesystem::class);
+        $filesystem = $this->prophet->prophesize(Filesystem::class);
         $filesystem->exists(Argument::containingString('/tmp/'))->shouldBeCalledTimes(2)->willReturn(true);
         $filesystem->remove(Argument::containingString('/tmp/'))->shouldBeCalledOnce()->willReturn(true);
         $filesystem->tempnam(Argument::any(), Argument::any())

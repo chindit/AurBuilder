@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Exception\FileSystemException;
+use App\Utils\StringUtils;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -30,10 +31,10 @@ class DockerService
     /**
      * @throws FileSystemException
      */
-    public function prepareDocker(string $archivePath): void
+    public function prepareDocker(): void
     {
         $this->prepareDirectories();
-        $this->copyFiles($archivePath);
+        $this->copyFiles();
     }
 
     public function buildPackage(SymfonyStyle $io): bool
@@ -64,14 +65,47 @@ class DockerService
         }
     }
 
-    private function copyFiles(string $archivePath): void
+    private function copyFiles(): void
     {
-        try
-        {
-            $this->filesystem->copy($this->dockerCommand, $this->buildDirectory . '/build.sh');
-        } catch (IOException $exception) {
-            throw new FileSystemException('Unable to copy build files');
+        $requiredDependencies = $this->getRequiredDependencies();
+
+        $dockerCommand = file_get_contents($this->dockerCommand);
+
+        if ($dockerCommand === false) {
+            return;
         }
+
+        $dockerCommand = str_replace(
+            '{buildDependencies}',
+            $requiredDependencies,
+            $dockerCommand
+        );
+
+        file_put_contents($this->buildDirectory . '/build.sh', $dockerCommand);
+    }
+
+    private function getRequiredDependencies(): string
+    {
+        if (!$this->filesystem->exists($this->buildDirectory . '/PKGBUILD')) {
+            return '';
+        }
+
+        $pkgBuild = file_get_contents($this->buildDirectory . '/PKGBUILD');
+        if ($pkgBuild === false) {
+            throw new FileSystemException('Unable to read PKGBUILD');
+        }
+
+        $depends = [];
+        $makeDepends = [];
+        preg_match('/^makedepends=\(([\s\S]*)\)$/mU', $pkgBuild, $depends);
+        preg_match('/^depends=\(([\s\S]*)\)$/mU', $pkgBuild, $makeDepends);
+
+        return implode(' ', array_unique(
+            array_merge(
+                StringUtils::parseDependencies(end($depends)),
+                StringUtils::parseDependencies(end($makeDepends))
+            )
+        ));
     }
 
     private function packageExists(): bool

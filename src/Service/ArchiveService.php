@@ -71,14 +71,14 @@ class ArchiveService
 
     private function moveFilesToBuildDirectory(string $directory): void
     {
-	    /**
-	     * Scandir could return false and throw an E_WARNING.
-	     * This CANNOT happen since directory is checked in
-	     * prepareDirectories() method.  To avoid PHPStan
-	     * warning, we force type variable
-	     */
-	    /** @var array<string> $filesArray */
-	    $filesArray = scandir($directory);
+        /**
+         * Scandir could return false and throw an E_WARNING.
+         * This CANNOT happen since directory is checked in
+         * prepareDirectories() method.  To avoid PHPStan
+         * warning, we force type variable
+         */
+        /** @var array<string> $filesArray */
+        $filesArray = scandir($directory);
         $files = new Collection($filesArray);
 
         $files->each(function(string $file) use ($directory)

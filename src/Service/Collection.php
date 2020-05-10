@@ -197,6 +197,11 @@ class Collection implements \Iterator
         }, $this->data);
     }
 
+    public function unique(): self
+    {
+        return new self(array_unique($this->data));
+    }
+
     public function valid(): bool
     {
         return $this->iterator->valid();

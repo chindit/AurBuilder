@@ -23,9 +23,9 @@ class AurCheckUpdatesCommandTest extends TestCase
     public function testDefinitionAndArguments(): void
     {
         $aurCommand = new AurCheckUpdatesCommand(
-            $this->prophesize(AurService::class)->reveal(),
-            $this->prophesize(PackageRepository::class)->reveal(),
-            $this->prophesize(PackageRequestRepository::class)->reveal()
+            $this->prophet->prophesize(AurService::class)->reveal(),
+            $this->prophet->prophesize(PackageRepository::class)->reveal(),
+            $this->prophet->prophesize(PackageRequestRepository::class)->reveal()
         );
 
         $this->assertEquals('aur:check-updates', $aurCommand->getName());
@@ -43,7 +43,7 @@ class AurCheckUpdatesCommandTest extends TestCase
 
     private function getOutputInterface(): ObjectProphecy
     {
-        $outputFormatter = $this->prophesize(OutputFormatterInterface::class);
+        $outputFormatter = $this->prophet->prophesize(OutputFormatterInterface::class);
         $outputFormatter->format(Argument::any())
             ->willReturnArgument();
         $outputFormatter->isDecorated()
@@ -51,7 +51,7 @@ class AurCheckUpdatesCommandTest extends TestCase
         $outputFormatter->setDecorated(Argument::exact(false))
             ->shouldBeCalled();
 
-        $outputInterface = $this->prophesize(OutputInterface::class);
+        $outputInterface = $this->prophet->prophesize(OutputInterface::class);
         $outputInterface->getFormatter()
             ->shouldBeCalled()
             ->willReturn(

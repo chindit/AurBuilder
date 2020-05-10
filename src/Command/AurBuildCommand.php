@@ -73,17 +73,10 @@ class AurBuildCommand extends Command
         $io->writeln('Downloading build information');
         try
         {
-            $archivePath = $this->archiveService->getBuildInformation($package->getUrl(), $package->getName());
-
-            $this->dockerService->prepareDocker($archivePath);
+            $this->archiveService->getBuildInformation($package->getUrl(), $package->getName());
+            $this->dockerService->prepareDocker();
 
             $result = $this->dockerService->buildPackage($io);
-        } catch (InvalidPackageException $exception) {
-            $io->error(
-                sprintf('Unable to prepare package for build.  Returned error is: %s', $exception->getMessage())
-            );
-
-            return 1;
         } catch (FileSystemException $exception) {
             $io->error(
                 sprintf('Unable to prepare Docker service.  Returned error is: %s', $exception->getMessage())
