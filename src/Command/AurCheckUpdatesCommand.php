@@ -53,11 +53,12 @@ class AurCheckUpdatesCommand extends Command
         );
 
         $io->table(
-            ['ID', 'Name', 'Version'],
+            ['ID', 'Name', 'Actual version', 'New version'],
             $packagesToUpdate->map(function(PackageInformation $package) {
                 return [
                     $package->getId(),
                     $package->getName(),
+                    $package->getActualVersion(),
                     $package->getVersion(),
                 ];
             })->toArray()

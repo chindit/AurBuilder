@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Exception\AttributeNotFoundException;
+
 class Collection implements \Iterator
 {
     private array $data;
@@ -116,6 +118,16 @@ class Collection implements \Iterator
         return $this->iterator->key();
     }
 
+    public function keyBy($callback): self
+    {
+        $results = [];
+        foreach ($this->data as $item) {
+            $results[] = (is_callable($callback)) ? $callback($item) : $this->getValueByAccessor($item, $callback);
+        }
+
+        return new self(array_combine($results, $this->data));
+    }
+
     public function keys(): self
     {
         return new self(array_keys($this->data));
@@ -159,20 +171,7 @@ class Collection implements \Iterator
 
         $results = new self();
         foreach ($this->data as $item) {
-            if (is_array($item)) {
-                if (isset($item[$name])) {
-                    $results->push($item[$name]);
-                }
-            } elseif (is_object($item)) {
-                if (method_exists($item, $name)) {
-                    $results->push($item->$name());
-                } elseif (method_exists($item, 'get' . ucfirst($name))) {
-                    $methodName = 'get' . ucfirst($name);
-                    $results->push($item->$methodName());
-                } elseif (property_exists($item, $name)) {
-                    $results->push($item->$name);
-                }
-            }
+            $results->push($this->getValueByAccessor($item, $name));
         }
 
         return $results;
@@ -205,5 +204,25 @@ class Collection implements \Iterator
     public function valid(): bool
     {
         return $this->iterator->valid();
+    }
+
+    private function getValueByAccessor($item, $name)
+    {
+        if (is_array($item)) {
+            if (isset($item[$name])) {
+                return $item[$name];
+            }
+        } elseif (is_object($item)) {
+            if (method_exists($item, $name)) {
+                return $item->$name();
+            } elseif (method_exists($item, 'get' . ucfirst($name))) {
+                $methodName = 'get' . ucfirst($name);
+                return $item->$methodName();
+            } elseif (property_exists($item, $name)) {
+                return $item->$name;
+            }
+        }
+
+        throw new AttributeNotFoundException(sprintf('Attribute %s could not be found', $name));
     }
 }

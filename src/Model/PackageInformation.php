@@ -12,6 +12,7 @@ final class PackageInformation
     private \DateTimeImmutable $lastModified;
     private bool $inRespository;
     private bool $requested;
+    private string $actualVersion;
 
     public function __construct(
         int $id,
@@ -19,7 +20,8 @@ final class PackageInformation
         string $url,
         string $version,
         int $lastModified,
-        string $description
+        string $description,
+        string $actualVersion = ''
     )
     {
         $this->id = $id;
@@ -30,6 +32,7 @@ final class PackageInformation
         $this->description = $description;
         $this->inRespository = false;
         $this->requested = false;
+        $this->actualVersion = $actualVersion;
     }
 
     public function getId(): int
@@ -45,6 +48,11 @@ final class PackageInformation
     public function getVersion(): string
     {
         return $this->version;
+    }
+
+    public function getActualVersion(): string
+    {
+        return $this->actualVersion;
     }
 
     public function getUrl(): string

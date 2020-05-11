@@ -60,18 +60,16 @@ class AurService
 
     public function findUpdatablePackages(Collection $packageList): Collection
     {
-        $packageNames = $packageList->pluck('name');
+        $packageList = $packageList->keyBy('name');
+        $packageNames = $packageList->keys();
 
         return $this
             ->makeRequest(implode('&arg[]=', $packageNames->toArray()))
             ->filter(
                 fn(array $infos) =>
-                version_compare(
-                    $infos['Version'],
-                    $packageList->get($infos['Name'], (new Package())->setVersion('0.0'))->getVersion()
-                ) === 1
+                version_compare($infos['Version'], $packageList->get($infos['Name'])->getVersion()) === 1
             )
-            ->map(function(array $packageData)
+            ->map(function(array $packageData) use ($packageList)
             {
                 return new PackageInformation(
                     $packageData['ID'],
@@ -79,7 +77,8 @@ class AurService
                     $packageData['URLPath'],
                     $packageData['Version'],
                     $packageData['LastModified'],
-                    $packageData['Description']
+                    $packageData['Description'],
+                    $packageList->get($packageData['Name'], '')->getVersion()
                 );
             });
     }

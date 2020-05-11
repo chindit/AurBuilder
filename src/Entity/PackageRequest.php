@@ -65,6 +65,11 @@ class PackageRequest
         return $this;
     }
 
+    public function getVersion(): string
+    {
+        return '0.0';
+    }
+
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;

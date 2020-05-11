@@ -129,9 +129,9 @@ class ArchiveServiceTest extends AbstractProphetTest
         $filesystem->exists(Argument::containingString('/tmp/'))->shouldBeCalledTimes(2)->willReturn(true);
         $filesystem->remove(Argument::containingString('/tmp/'))->shouldBeCalledOnce()->willReturn(true);
         $filesystem->copy(Argument::exact('/tmp/yay/.SRCINFO'), Argument::exact('/tmp/.SRCINFO'))
-	        ->shouldBeCalledOnce()->willReturn(true);
-	    $filesystem->copy(Argument::containingString('/tmp/yay/'), Argument::containingString('/tmp/'))
-		    ->shouldBeCalledTimes(3)->willReturn(true);
+            ->shouldBeCalledOnce()->willReturn(true);
+        $filesystem->copy(Argument::containingString('/tmp/yay/'), Argument::containingString('/tmp/'))
+            ->shouldBeCalledTimes(3)->willReturn(true);
         $filesystem->tempnam(Argument::any(), Argument::any())
             ->shouldBeCalledOnce()
             ->willReturn((new Filesystem())->tempnam(sys_get_temp_dir(), uniqid('', true)));
