@@ -57,6 +57,11 @@ class Package
      */
     private Collection $releases;
 
+    public function getId(): int
+    {
+    	return $this->id;
+    }
+
     public function setPackageId(int $packageId): self
     {
         $this->packageId = $packageId;
@@ -108,5 +113,10 @@ class Package
     public function getUpdatedAt(): ?CarbonImmutable
     {
         return $this->updatedAt ? CarbonImmutable::instance($this->updatedAt) : null;
+    }
+
+    public function getReleases(): Collection
+    {
+    	return $this->releases;
     }
 }
