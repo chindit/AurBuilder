@@ -8,6 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "easycorp/easyadmin-bundle": "^2.3",
         "nesbot/carbon": "^2.33",
         "stof/doctrine-extensions-bundle": "^1.4",
         "symfony/asset": "5.0.*",

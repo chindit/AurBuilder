@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="uk-card uk-card-default uk-card-body">
+    <h1 class="uk-card-title">Register</h1>
+
+    {{ form_start(registrationForm) }}
+    <div class="uk-margin">
+        {{ form_label(registrationForm.email) }}
+        {{ form_widget(registrationForm.email, {'attr': {'class': 'uk-input'}}) }}
+    </div>
+    <div class="uk-margin">
+        {{ form_label(registrationForm.plainPassword) }}
+        {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'uk-input'}}) }}
+    </div>
+    <div class="uk-margin">
+        {{ form_label(registrationForm.agreeTerms) }}
+        {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'uk-checkbox'}}) }}
+    </div>
+
+        <button type="submit" class="uk-button uk-button-default">Register</button>
+    {{ form_end(registrationForm) }}
+</div>
+{% endblock %}
