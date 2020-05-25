@@ -24,7 +24,7 @@ class DockerService
     {
         $this->buildDirectory = $buildDirectory;
         $this->filesystem = $filesystem;
-        $this->dockerCommand = $dockerCommandFile;
+        $this->dockerCommand = __DIR__ . '/../../' . $dockerCommandFile;
         $this->dockerCli = str_replace('{buildDirectory}', $buildDirectory, $dockerCli);
     }
 
