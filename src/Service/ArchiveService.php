@@ -69,6 +69,15 @@ class ArchiveService
         return sys_get_temp_dir() . '/' . $name;
     }
 
+    public function cleanDirectory(string $directory): void
+    {
+        if (!$this->filesystem->exists($directory)) {
+            return;
+        }
+
+        $this->filesystem->remove($directory);
+    }
+
     private function moveFilesToBuildDirectory(string $directory): void
     {
         /**

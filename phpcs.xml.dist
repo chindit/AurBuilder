@@ -18,5 +18,9 @@
 	<exclude-pattern>var/*</exclude-pattern>
 	<exclude-pattern>vendor/*</exclude-pattern>
     <exclude-pattern>src/Migrations/*</exclude-pattern>
+    <exclude-pattern>src/Form/RegistrationFormType.php</exclude-pattern>
+    <exclude-pattern>src/Security/AppAuthenticator.php</exclude-pattern>
+    <exclude-pattern>src/Controller/SecurityController.php</exclude-pattern>
+
 
 </ruleset>

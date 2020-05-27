@@ -59,7 +59,7 @@ class Package
 
     public function getId(): int
     {
-    	return $this->id;
+        return $this->id;
     }
 
     public function setPackageId(int $packageId): self
@@ -117,6 +117,6 @@ class Package
 
     public function getReleases(): Collection
     {
-    	return $this->releases;
+        return $this->releases;
     }
 }

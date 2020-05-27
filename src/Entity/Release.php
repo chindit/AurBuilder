@@ -40,7 +40,7 @@ class Release
 
     public function getId(): int
     {
-    	return $this->id;
+        return $this->id;
     }
 
     public function __construct()

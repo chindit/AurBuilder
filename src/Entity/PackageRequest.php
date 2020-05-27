@@ -65,14 +65,14 @@ class PackageRequest
         return $this;
     }
 
-	/**
-	 * Required by admin
-	 */
+    /**
+     * Required by admin
+     */
     public function setApproved(bool $approved): self
     {
-    	$this->approved = $approved;
+        $this->approved = $approved;
 
-    	return $this;
+        return $this;
     }
 
     public function getVersion(): string
