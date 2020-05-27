@@ -104,6 +104,8 @@ class AurBuildCommandTest extends AbstractProphetTest
 
     public function testBuildFailsOnPackagePreparation(): void
     {
+        $this->expectException(InvalidPackageException::class);
+
         $aurCommandClass = new \ReflectionClass(AurBuildCommand::class);
         $executeMethod = $aurCommandClass->getMethod('execute');
         $executeMethod->setAccessible(true);
@@ -189,7 +191,7 @@ class AurBuildCommandTest extends AbstractProphetTest
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
-            ->prepareDocker(Argument::exact('/path/to/chindit/package'))
+            ->prepareDocker(Argument::any())
             ->shouldBeCalledOnce()
             ->willThrow(FileSystemException::class);
 
@@ -247,6 +249,11 @@ class AurBuildCommandTest extends AbstractProphetTest
             )
             ->shouldBeCalledOnce()
             ->willReturn('/path/to/chindit/package');
+        $archiveService
+            ->cleanDirectory(
+                Argument::any()
+            )
+            ->shouldBeCalledOnce();
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
