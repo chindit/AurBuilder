@@ -2,23 +2,18 @@
 
 namespace App\Tests\App\Command;
 
-use App\Command\AurBuildCommand;
 use App\Command\AurCheckUpdatesCommand;
 use App\Repository\PackageRepository;
 use App\Repository\PackageRequestRepository;
-use App\Service\ArchiveService;
 use App\Service\AurService;
-use App\Service\DockerService;
-use App\Service\RepositoryService;
-use PHPUnit\Framework\TestCase;
+use App\Tests\AbstractProphetTest;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AurCheckUpdatesCommandTest extends TestCase
+class AurCheckUpdatesCommandTest extends AbstractProphetTest
 {
     public function testDefinitionAndArguments(): void
     {

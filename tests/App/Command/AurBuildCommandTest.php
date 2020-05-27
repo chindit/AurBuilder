@@ -114,16 +114,7 @@ class AurBuildCommandTest extends AbstractProphetTest
         $aurService
             ->getPackageInformation(Argument::exact('chindit'))
             ->shouldBeCalledOnce()
-            ->willReturn(
-                new PackageInformation(
-                    23,
-                    'chindit',
-                    'https://github.com/chindit/AurBuilder',
-                    '1.3.2',
-                    time(),
-                    'Chindit\'s package'
-                )
-            );
+            ->willThrow(PackageNotFoundException::class);
 
         $archiveService = $this->prophet->prophesize(ArchiveService::class);
         $archiveService
@@ -325,6 +316,11 @@ class AurBuildCommandTest extends AbstractProphetTest
             )
             ->shouldBeCalledOnce()
             ->willReturn('/path/to/chindit/package');
+        $archiveService
+            ->cleanDirectory(
+                Argument::any()
+            )
+            ->shouldBeCalledOnce();
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
@@ -398,6 +394,11 @@ class AurBuildCommandTest extends AbstractProphetTest
             )
             ->shouldBeCalledOnce()
             ->willReturn('/path/to/chindit/package');
+        $archiveService
+            ->cleanDirectory(
+                Argument::any()
+            )
+            ->shouldBeCalledOnce();
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
@@ -479,6 +480,11 @@ class AurBuildCommandTest extends AbstractProphetTest
             )
             ->shouldBeCalledOnce()
             ->willReturn('/path/to/chindit/package');
+        $archiveService
+            ->cleanDirectory(
+                Argument::any()
+            )
+            ->shouldBeCalledOnce();
 
         $dockerService = $this->prophet->prophesize(DockerService::class);
         $dockerService
