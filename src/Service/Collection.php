@@ -174,7 +174,7 @@ class Collection implements \Iterator
             $results->push($this->getValueByAccessor($item, $name));
         }
 
-        return $results;
+        return $results->filter(fn($item) => $item !== null);
     }
 
     public function push($item): self
@@ -223,6 +223,6 @@ class Collection implements \Iterator
             }
         }
 
-        throw new AttributeNotFoundException(sprintf('Attribute %s could not be found', $name));
+        return null;
     }
 }
