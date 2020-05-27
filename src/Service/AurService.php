@@ -67,7 +67,10 @@ class AurService
             ->makeRequest(implode('&arg[]=', $packageNames->toArray()))
             ->filter(
                 fn(array $infos) =>
-                version_compare($infos['Version'], $packageList->get($infos['Name'])->getVersion()) === 1
+                version_compare(
+                    $infos['Version'],
+                    $packageList->get($infos['Name'], (new Package())->setVersion('0.0'))->getVersion()
+                ) === 1
             )
             ->map(function(array $packageData) use ($packageList)
             {

@@ -104,8 +104,6 @@ class AurBuildCommandTest extends AbstractProphetTest
 
     public function testBuildFailsOnPackagePreparation(): void
     {
-        $this->expectException(InvalidPackageException::class);
-
         $aurCommandClass = new \ReflectionClass(AurBuildCommand::class);
         $executeMethod = $aurCommandClass->getMethod('execute');
         $executeMethod->setAccessible(true);

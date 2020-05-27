@@ -75,7 +75,7 @@ class DockerServiceTest extends AbstractProphetTest
     {
         $dockerService = new DockerService(
             '/tmp/t1build',
-            '/../../Resources/dockerTest.sh',
+            'Resources/dockerTest.sh',
             '',
             new Filesystem());
         $dockerService->prepareDocker();
@@ -91,7 +91,7 @@ class DockerServiceTest extends AbstractProphetTest
 
         $dockerService = new DockerService(
             '/tmp/t1build',
-            '/../../Resources/dockerTest.sh',
+            'Resources/dockerTest.sh',
             'cd / && pwd',
             new Filesystem());
         $dockerService->prepareDocker();
