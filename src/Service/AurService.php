@@ -69,7 +69,7 @@ class AurService
                 fn(array $infos) =>
                 version_compare(
                     $infos['Version'],
-                    $packageList->get($infos['Name'], (new Package())->setVersion('0.0'))->getVersion()
+                    $packageList->get($infos['Name'], new Package())->getVersion()
                 ) === 1
             )
             ->map(function(array $packageData) use ($packageList)
@@ -81,7 +81,7 @@ class AurService
                     $packageData['Version'],
                     $packageData['LastModified'],
                     $packageData['Description'],
-                    $packageList->get($packageData['Name'], (new Package())->setVersion('0.0'))->getVersion()
+                    $packageList->get($packageData['Name'], new Package())->getVersion()
                 );
             });
     }

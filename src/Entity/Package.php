@@ -57,7 +57,12 @@ class Package
      */
     private Collection $releases;
 
-    public function getId(): int
+    public function __construct()
+    {
+    	$this->version = '';
+    }
+
+	public function getId(): int
     {
         return $this->id;
     }
