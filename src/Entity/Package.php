@@ -59,10 +59,10 @@ class Package
 
     public function __construct()
     {
-    	$this->version = '';
+        $this->version = '';
     }
 
-	public function getId(): int
+    public function getId(): int
     {
         return $this->id;
     }
