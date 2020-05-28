@@ -81,7 +81,7 @@ class AurService
                     $packageData['Version'],
                     $packageData['LastModified'],
                     $packageData['Description'],
-                    $packageList->get($packageData['Name'], '')->getVersion()
+                    $packageList->get($packageData['Name'], (new Package())->setVersion('0.0'))->getVersion()
                 );
             });
     }

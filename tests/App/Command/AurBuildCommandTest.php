@@ -115,13 +115,6 @@ class AurBuildCommandTest extends AbstractProphetTest
             ->willThrow(PackageNotFoundException::class);
 
         $archiveService = $this->prophet->prophesize(ArchiveService::class);
-        $archiveService
-            ->getBuildInformation(
-                Argument::exact('https://github.com/chindit/AurBuilder'),
-                Argument::exact('chindit')
-            )
-            ->shouldBeCalledOnce()
-            ->willThrow(InvalidPackageException::class);
 
         $aurCommand = new AurBuildCommand(
             $aurService->reveal(),
