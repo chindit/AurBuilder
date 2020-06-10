@@ -64,6 +64,7 @@ class RepositoryService
                     $movedFiles->push($file);
 
                     if ($isSuccessful) {
+                    	var_dump('Moved files to repository', $movedFiles->toArray());
                         $isSuccessful = $this->updateRepository($file);
                         $this->updateEntities($package);
                     }
@@ -72,7 +73,7 @@ class RepositoryService
         } catch (\Exception $exception) {
             return false;
         }
-
+die('FINISHED');
         return $movedFiles->isNotEmpty() && $isSuccessful;
     }
 
@@ -116,6 +117,8 @@ class RepositoryService
         $process = Process::fromShellCommandline($command);
 
         $process->run();
+
+        var_dump('CLI repo output', $process->getOutput(), 'ERROR: ', $process->getErrorOutput());
 
         return $process->isSuccessful();
     }
