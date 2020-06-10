@@ -254,6 +254,9 @@
     "symfony/dependency-injection": {
         "version": "v5.0.5"
     },
+    "symfony/deprecation-contracts": {
+        "version": "v2.1.2"
+    },
     "symfony/doctrine-bridge": {
         "version": "v5.0.7"
     },
@@ -384,17 +387,26 @@
             "tests/bootstrap.php"
         ]
     },
+    "symfony/polyfill-intl-grapheme": {
+        "version": "v1.17.0"
+    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.16.0"
     },
     "symfony/polyfill-intl-idn": {
         "version": "v1.14.0"
     },
+    "symfony/polyfill-intl-normalizer": {
+        "version": "v1.17.0"
+    },
     "symfony/polyfill-mbstring": {
         "version": "v1.14.0"
     },
     "symfony/polyfill-php73": {
         "version": "v1.14.0"
+    },
+    "symfony/polyfill-php80": {
+        "version": "v1.17.0"
     },
     "symfony/process": {
         "version": "v5.0.5"
@@ -404,6 +416,9 @@
     },
     "symfony/property-access": {
         "version": "v5.0.8"
+    },
+    "symfony/property-info": {
+        "version": "v5.1.0"
     },
     "symfony/routing": {
         "version": "4.2",
@@ -448,6 +463,9 @@
     },
     "symfony/stopwatch": {
         "version": "v5.0.7"
+    },
+    "symfony/string": {
+        "version": "v5.1.0"
     },
     "symfony/templating": {
         "version": "v5.0.7"
